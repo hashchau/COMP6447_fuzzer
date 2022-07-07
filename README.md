@@ -3,7 +3,7 @@ This is a cool fuzzer that fuzzes stuff
 
 # Usage
 ```python
-python3 fuzzer.py binary binaryinput.txt
+python3 run.py binary binaryinput.txt
 ```
 
 # Dependencies

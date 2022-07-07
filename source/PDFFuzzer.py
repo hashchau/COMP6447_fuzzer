@@ -1,26 +1,24 @@
-class PDFFuzzer:
+from Fuzzer import Fuzzer
+# Subclass of Fuzzer 
+class PDFFuzzer(Fuzzer):
     def __init__(self, binary_path, binary_input_path):
+        super().__init__(binary_path, binary_input_path)
         print("Running PDF Fuzzer")
-        self.binary_path = binary_path
-        self.binary_input_path = binary_input_path
         print(f"binary_path: {self.binary_path}")
         print(f"binary_input_path: {self.binary_input_path}")
         pass
 
     @staticmethod
-    def isType(binary_path):
-        """_summary_
-        Check if the type is a pdf
-        """
-
+    def is_type(binary_path):
         return True
 
     def fuzz(self):
-        """_summary_
-        Fuzz the PDF file
-
-        _returns_
-        Returns the input that crashed the binary
-        """
-
         return "blah"
+
+    def get_coverage():
+        return 0.0
+    
+    def get_type_of_crash():
+        return "e.g. buffer overflow"
+
+    
