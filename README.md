@@ -7,7 +7,9 @@ python3 run.py binary binaryinput.txt
 ```
 
 # Dependencies
+```
 
+```
 # Credits
 ```
 Jayden Leung (z5312070)
