@@ -8,10 +8,6 @@ class PDFFuzzer(Fuzzer):
         print(f"binary_input_path: {self.binary_input_path}")
         pass
 
-    @staticmethod
-    def is_type(binary_path):
-        return True
-
     def fuzz(self):
         return "blah"
 

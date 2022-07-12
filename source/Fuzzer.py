@@ -7,10 +7,6 @@ class Fuzzer(ABC):
         pass
 
     @abstractmethod
-    def is_type(binary_path):
-        pass
-    
-    @abstractmethod
     def fuzz(self):
         """_summary_
         Fuzz the PDF file
