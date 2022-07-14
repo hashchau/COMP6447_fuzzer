@@ -1,5 +1,5 @@
-from PDFFuzzer import PDFFuzzer
-from CSVFuzzer import CSVFuzzer
+# from strategies.PDFFuzzer import PDFFuzzer
+from strategies.CSVFuzzer import CSVFuzzer
 from sys import argv
 from magic import from_file
 

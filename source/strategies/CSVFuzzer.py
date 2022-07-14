@@ -1,4 +1,4 @@
-from Fuzzer import Fuzzer
+from .Fuzzer import Fuzzer
 class CSVFuzzer(Fuzzer):
     def __init__(self, binary_path, binary_input_path):
         super().__init__(binary_path, binary_input_path)

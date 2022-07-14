@@ -1,4 +1,4 @@
-from Fuzzer import Fuzzer
+from .Fuzzer import Fuzzer
 # Subclass of Fuzzer 
 class PDFFuzzer(Fuzzer):
     def __init__(self, binary_path, binary_input_path):
