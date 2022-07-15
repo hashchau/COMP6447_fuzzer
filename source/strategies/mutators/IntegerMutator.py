@@ -14,7 +14,7 @@ class IntegerMutator(TypeMutator):
     
     @staticmethod
     def make_huge(integer):
-        return integer ^ sys.maxsize #change
+        return integer ** sys.maxsize
     
     @staticmethod
     def make_float(integer):
@@ -23,5 +23,3 @@ class IntegerMutator(TypeMutator):
     @staticmethod
     def make_bool(integer):
         return bool(integer)
-
-    
