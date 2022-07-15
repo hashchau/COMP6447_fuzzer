@@ -1,5 +1,5 @@
 import random
-from TypeMutator import TypeMutator
+from .TypeMutator import TypeMutator
 
 class StringMutator(TypeMutator):
     def __init__(self):
@@ -10,13 +10,21 @@ class StringMutator(TypeMutator):
         pass
     
     @staticmethod
-    def flip_bit(input_string):
-        pass
+    def flip_bit(input_string): # I hope this works! 
+        chars = bytearray(input_string, 'utf-8') # convert each char to int
+        flip_location = random.randint(0, len(chars) - 1) # pick random location to flip
+        chars[flip_location] ^= 0xFFFFFFFF # XOR  to flip
+        return "".join(str(chars[val]) for val in chars) # return string
+
 
     @staticmethod
     def insert_new_line(input_string):
         replacement_location = random.randint(0, len(input_string) - 1)
         mutated_string = input_string[:replacement_location] + '\n' + input_string[replacement_location:]
+        return mutated_string
+
+    def insert_new_csv_line(length):
+        mutated_string = "A," * (length - 1) + "A"
         return mutated_string
 
     @staticmethod
