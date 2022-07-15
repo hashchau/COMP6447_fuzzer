@@ -1,5 +1,6 @@
 # from strategies.PDFFuzzer import PDFFuzzer
 from strategies.CSVFuzzer import CSVFuzzer
+from strategies.JSONFuzzer import JSONFuzzer
 from sys import argv
 from magic import from_file
 
@@ -12,6 +13,7 @@ def get_strategy(binary_input_path):
         print("Selecting JPEG Fuzzer")
     elif "JSON" in file_type:
         print("Selecting JSON Fuzzer")
+        return JSONFuzzer
     elif "ASCII text" == file_type:
         print("Selecting plaintext Fuzzer")
     elif "HTML document, ASCII text" == file_type:
