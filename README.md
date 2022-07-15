@@ -14,6 +14,6 @@ python3 run.py binary binaryinput.txt
 ```
 Jayden Leung (z5312070)
 Hashimi Chau (z5242398)
-Cameron Huang (z)
+Cameron Huang (z5251618)
 Cyrus Wilkie (z)
 ```
