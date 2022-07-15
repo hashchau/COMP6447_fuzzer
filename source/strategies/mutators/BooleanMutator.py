@@ -13,5 +13,8 @@ class BooleanMutator(TypeMutator):
     
     @staticmethod
     def boolean_to_int(boolean):
-        result = [1 if boolean is True else 0]
-        return result
+        return int(boolean)
+    
+    @staticmethod
+    def boolean_to_float(boolean):
+        return float(boolean)
