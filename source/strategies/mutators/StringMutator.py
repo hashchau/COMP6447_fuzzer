@@ -8,7 +8,6 @@ class StringMutator(TypeMutator):
     @staticmethod
     def mutate(input_string):
         pass
-
     
     @staticmethod
     def flip_bit(input_string):
@@ -16,12 +15,22 @@ class StringMutator(TypeMutator):
 
     @staticmethod
     def insert_new_line(input_string):
-        pass
+        replacement_location = random.randint(0, len(input_string) - 1)
+        mutated_string = input_string[:replacement_location] + '\n' + input_string[replacement_location:]
+        return mutated_string
 
     @staticmethod
     def insert_format_string(input_string):
+        format_chars = ['%s', '%n', '%x', '%p']
+        num_replacements = random.randint(0, len(input_string) - 1)
+        mutated_string = input_string
         
-        pass
+        for i in range(0, num_replacements):
+            replacement_location = random.randint(0, len(input_string) - 1)
+            replacement_character = random.choice(format_chars)
+            mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location:]
+        
+        return mutated_string
 
     @staticmethod
     def extend_string(input_string):
@@ -41,9 +50,9 @@ class StringMutator(TypeMutator):
         num_replacements = random.randint(0, len(input_string) - 1)
         mutated_string = input_string
         for i in range(0, num_replacements):
-                replacement_location = random.randint(0, len(input_string) - 1)
-                replacement_character = chr(random.randint(0, 255))
-                mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location + 1:]
+            replacement_location = random.randint(0, len(input_string) - 1)
+            replacement_character = chr(random.randint(0, 255))
+            mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location + 1:]
         
         return mutated_string
     

@@ -5,7 +5,6 @@ class TypeMutator(ABC):
         pass
 
     @abstractmethod
-    @staticmethod
     def mutate(input_string):
         pass
 
