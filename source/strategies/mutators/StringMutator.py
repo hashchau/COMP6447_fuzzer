@@ -1,4 +1,5 @@
 import random
+from readline import insert_text
 from .TypeMutator import TypeMutator
 
 class StringMutator(TypeMutator):
@@ -8,23 +9,29 @@ class StringMutator(TypeMutator):
     @staticmethod
     def mutate(input_string):
         pass
+
+    @staticmethod
+    def delete_char(input_string):
+        d = random.randint(0, len(input_string) - 1)
+        return input_string[:d] + input_string[d + 1:]
     
     @staticmethod
-    def flip_bit(input_string): # I hope this works! 
-        chars = bytearray(input_string, 'utf-8') # convert each char to int
-        flip_location = random.randint(0, len(chars) - 1) # pick random location to flip
-        chars[flip_location] ^= 0xFFFFFFFF # XOR  to flip
-        return "".join(str(chars[val]) for val in chars) # return string
-
+    def flip_bit(input_string):
+        chars = bytearray(str(input_string), 'utf-8')
+        flip_location = random.randint(0, len(chars) - 1)
+        chars[flip_location] ^= 0xFF
+        return str(chars)
 
     @staticmethod
     def insert_new_line(input_string):
         replacement_location = random.randint(0, len(input_string) - 1)
         mutated_string = input_string[:replacement_location] + '\n' + input_string[replacement_location:]
         return mutated_string
-
-    def insert_new_csv_line(length):
-        mutated_string = "A," * (length - 1) + "A"
+    
+    @staticmethod
+    def insert_new_line_with_delimiter(char, delimiter, num_columns):
+        mutated_string_component = char + delimiter
+        mutated_string = mutated_string_component * (num_columns - 1) + char
         return mutated_string
 
     @staticmethod

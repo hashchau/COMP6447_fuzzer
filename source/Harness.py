@@ -68,8 +68,8 @@ class Harness():
         cls._mutations.put((0,default_payload))
         
         while True:
-            if round == 5:
-                break
+            # if round == 5:
+                # break
                 
             print(f"Fuzzing round {round}")                
             # Run the fuzzer on current mutations
