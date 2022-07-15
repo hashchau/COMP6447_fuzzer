@@ -13,9 +13,9 @@ class JSONFuzzer(Fuzzer):
         f = open(self.binary_input_path, "r")
         # Create a dictionary from the input JSON file's contents
         input_file_dict = json.load(f)
-        # Iterate through the dictionary, seeing if changing 
+        # Iterate through the dictionary
         for value in input_file_dict.values():
-              print(value)
+            print(value)
 
         return "blah"
 
@@ -24,4 +24,3 @@ class JSONFuzzer(Fuzzer):
     
     def get_type_of_crash():
         return "e.g. buffer overflow"
-
