@@ -1,4 +1,5 @@
 from .Fuzzer import Fuzzer
+import json
 class JSONFuzzer(Fuzzer):
     def __init__(self, binary_path, binary_input_path):
         super().__init__(binary_path, binary_input_path)
@@ -16,4 +17,3 @@ class JSONFuzzer(Fuzzer):
     def get_type_of_crash():
         return "e.g. buffer overflow"
 
-    
