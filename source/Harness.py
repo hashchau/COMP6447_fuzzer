@@ -5,7 +5,6 @@ from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
 
 from magic import from_file
-import copy
 
 # Singleton class
 class Harness():
@@ -39,11 +38,9 @@ class Harness():
         queue_copy = PriorityQueue()
         for i in cls._mutations.queue:
             queue_copy.put(i)
-        print(f"queue_copy == {queue_copy.queue}")
 
         # run the queue
         while not queue_copy.empty():
-            print("running payload")
             # get the highest priority payload
             priority, payload = queue_copy.get()
             # run the payload
@@ -101,10 +98,11 @@ class Harness():
             cls._mutations = next_mutations
             round += 1
 
-        print("Finished fuzzing, writing payload to bad.txt")
-        print(f"payload written to bad.txt == {cls._successful_payload}")
-        with open("bad.txt", "wb") as f:
-            f.write(cls._successful_payload)
+        if cls._successful_payload != None:
+            print("Finished fuzzing, writing payload to bad.txt")
+            print(f"payload written to bad.txt == {cls._successful_payload}")
+            with open("bad.txt", "w") as f:
+                f.write(cls._successful_payload)
         
     
     def try_payload(cls, payload):
@@ -125,9 +123,9 @@ class Harness():
             process = subprocess.Popen([f'{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
             process = subprocess.Popen([f'./{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
+        print(payload_data)
         try:
-            out, err = process.communicate(payload_data) 
+            out, err = process.communicate(payload_data.encode()) 
         except subprocess.TimeoutExpired:
             print("Process exceeded given timeout value")
             process.terminate()

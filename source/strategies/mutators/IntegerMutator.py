@@ -2,8 +2,6 @@ from .TypeMutator import TypeMutator
 import sys
 import random
 class IntegerMutator(TypeMutator):
-    def __init__(self):
-        pass
     
     @staticmethod
     def bit_flip(integer):

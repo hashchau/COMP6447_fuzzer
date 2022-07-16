@@ -4,30 +4,29 @@
 
 ## Design & Functionality
 ### Fuzzing Strategy
-Our program begins by using the from_file module from the magic library o detect whatto detect the file type oite input, this thappropriate mutator for that file type. The current file types that our fuzzer supports are
+Our program begins by using the from_file module from the magic library to detect the file type of the input, it then loads the appropriate mutator for that file type. The current file types that our fuzzer supports are
 - CSV
 - JSON
 The file type mutator then calls corresponding type mutators to fuzz the input.
-ds the corres
-### T & Strategies
-Our program currently supports four different type mutations:y- pe Muta
+
+### Type Mutations & Strategies
+Our program currently supports four different type mutations:
+- Boolean
     - negate boolean
     - convert boolean to string
     - convert boolean to int
-    - convert boolean to floati- ons
-B
+    - convert boolean to float
+- Float
     - flip all bits
     - add or subtract a random integer
     - make negative
     - make huge
     - convert float to int
     - convert float to bool
-    - convert float to nullo- lean
-
-F
-    - same as aboveo- at
-
-In
+    - convert float to null
+- Integer
+    - same as above
+- String
     - delete random char
     - insert random char
     - flip random bit
@@ -35,11 +34,7 @@ In
     - insert new line in random location with delimiter
     - insert format string in random location
     - extend string
-    - extend string by repeating itselfteger
+    - extend string by repeating itself
 
-String
-
-### P
-A priority queue is used to SON
-
-### CSV
+### Priority Queue
+A priority queue is used to maintain a list of inputs to run on the provided binary. - priority based on distance (number of mutations from original input)

@@ -2,8 +2,6 @@ from TypeMutator import TypeMutator
 import sys
 import random
 class FloatMutator(TypeMutator):
-    def __init__(self):
-        pass
     
     #Note: these functions may require the float be rounded to nearest whole number first
     

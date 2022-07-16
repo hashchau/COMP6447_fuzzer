@@ -3,8 +3,6 @@ from readline import insert_text
 from .TypeMutator import TypeMutator
 
 class StringMutator(TypeMutator):
-    def __init__(self):
-        pass
     
     @staticmethod
     def mutate(input_string):

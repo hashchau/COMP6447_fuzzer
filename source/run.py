@@ -18,9 +18,9 @@ def main():
     # Sets the strategy to use
     Harness.get_instance().set_fuzzer_strategy(binary_input_path)
     
+    payload = ""
     # Use the input file as the default, initial payload
-    payload = b""
-    with open(binary_input_path, "rb") as f:
+    with open(binary_input_path, "r") as f:
         payload = f.read()
 
     # Execute the fuzzer
