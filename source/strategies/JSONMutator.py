@@ -1,10 +1,13 @@
 from .FormatMutator import FormatMutator
 from .mutators.IntegerMutator import IntegerMutator
 import json
+import random
 class JSONMutator(FormatMutator):
 
     @staticmethod
     def mutate_once(payload):
+        # mutated_payloads = []
+        # input_file_dict = json.loads(payload)
         return JSONMutator.mutate_all(payload)
         
     @staticmethod
@@ -14,6 +17,7 @@ class JSONMutator(FormatMutator):
         # Iterate through the dictionary
         for key, value in input_file_dict.items():
             if isinstance(value, int):
+                
                 mutated_value = IntegerMutator.make_huge(value)
                 # print(f"Mutated value: {mutated_value}")
                 mutated_dict = input_file_dict.copy()
@@ -23,3 +27,4 @@ class JSONMutator(FormatMutator):
                 mutated_payloads.append(mutated_dict_bytes)
 
         return mutated_payloads
+    

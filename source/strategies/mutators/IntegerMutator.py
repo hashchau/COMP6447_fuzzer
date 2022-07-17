@@ -23,15 +23,15 @@ class IntegerMutator(TypeMutator):
     
     @staticmethod
     def make_huge(integer):
-        # return integer ** sys.maxsize
-        max_signed_32_bit_integer = 2147483647
-        return max_signed_32_bit_integer
+        return sys.maxsize
+        # max_signed_32_bit_integer = 2147483647
+        # return max_signed_32_bit_integer
     
     @staticmethod
     def make_tiny(integer):
-        # return integer ** sys.minsize
-        min_signed_32_bit_integer = -2147483648
-        return min_signed_32_bit_integer
+        return sys.minsize
+        # min_signed_32_bit_integer = -2147483648
+        # return min_signed_32_bit_integer
     
     @staticmethod
     def make_float(integer):

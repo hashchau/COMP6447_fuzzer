@@ -25,7 +25,11 @@ class FloatMutator(TypeMutator):
     
     @staticmethod
     def make_huge(flt):
-        return flt ** sys.maxsize
+        return sys.float_info.max
+    
+    @staticmethod
+    def make_tiny(flt):
+        return sys.float_info.min
     
     @staticmethod
     def make_int(flt):
