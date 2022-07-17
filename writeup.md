@@ -80,7 +80,7 @@ The improvements we want to make include:
     -  We plan to optimise our fuzzer by improving our algorithms runtime and utilising multithreading for executing our payloads on the binaries
 
 - Priority queue heuristic
-    - Currently our priority is based off only one factor, the distance away from the original input. One of our ideas is to integrate some type of genetic algorithm into our heuristic. Mutations that trigger a new code path will have a higher priority compared with one that doesn't. In order to do this, we will need a way to measure code coverage.
+    - Currently, our priority is based off only one factor, the distance away from the original input. One of our ideas is to integrate some type of genetic algorithm into our heuristic. Mutations that trigger a new code path will have a higher priority compared with one that doesn't. In order to do this, we will need a way to measure code coverage.
 
 ### Something Awesome Ideas
 Currently our something awesome ideas include
