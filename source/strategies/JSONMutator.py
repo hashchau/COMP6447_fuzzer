@@ -5,7 +5,7 @@ class JSONMutator(FormatMutator):
 
     @staticmethod
     def mutate_once(payload):
-        pass
+        return JSONMutator.mutate_all(payload)
         
     @staticmethod
     def mutate_all(payload):
@@ -18,7 +18,6 @@ class JSONMutator(FormatMutator):
                 # print(f"Mutated value: {mutated_value}")
                 mutated_dict = input_file_dict.copy()
                 mutated_dict[key] = mutated_value
-                print(f"Mutated dictionary: {mutated_dict}")
                 mutated_dict_str = json.dumps(mutated_dict)
                 mutated_dict_bytes = mutated_dict_str
                 mutated_payloads.append(mutated_dict_bytes)

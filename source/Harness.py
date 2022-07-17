@@ -44,6 +44,8 @@ class Harness():
             # get the highest priority payload
             priority, payload = queue_copy.get()
             # run the payload
+
+            # Multithreading
             cls.try_payload(payload)
             
             # Todo determine if this mutation was good, if so add it to good mutation
@@ -53,20 +55,14 @@ class Harness():
     
     # Entry point
     def fuzz(cls, default_payload):
-        # _mutations: a
-        # a -> aa
-        # a -> ab
-        # a -> a%x
-        # a -> aaaaaa
-        
-        # next_mutations: aaa aax a%x%x a%x%d
         round = 1
+
         # Add the default payload to the mutation queue
         cls._mutations.put((0,default_payload))
         
         while True:
             # if round == 5:
-                # break
+            #     break
                 
             print(f"Fuzzing round {round}")                
             # Run the fuzzer on current mutations
@@ -79,17 +75,8 @@ class Harness():
             # Generate new mutations
             while not cls._mutations.empty():
                 priority, payload = cls._mutations.get()
-                
-                
-                # Strategy 1
-                # # Mutate twice
-                # for i in range(2):
-                #     mutated_payload = cls._strategy.mutate(payload)
-                #     next_mutations.put((priority + 1, mutated_payload))
-                
-                
-                # Strategy 2
-                mutated_payloads = cls._strategy.mutate_all(payload)
+                mutated_payloads = cls._strategy.mutate_once(payload)
+
                 for mutated_payload in mutated_payloads:
                     next_mutations.put((priority + 1, mutated_payload))
                 
@@ -100,7 +87,6 @@ class Harness():
 
         if cls._successful_payload != None:
             print("Finished fuzzing, writing payload to bad.txt")
-            print(f"payload written to bad.txt == {cls._successful_payload}")
             with open("bad.txt", "w") as f:
                 f.write(cls._successful_payload)
         
@@ -108,13 +94,9 @@ class Harness():
     def try_payload(cls, payload):
         process, out, err = cls.send_data(payload)
         
-        # print(f"signal.SIGSEGV == {signal.SIGSEGV}")
         if process.returncode == -(signal.SIGABRT) or process.returncode != -(signal.SIGSEGV):
-            # Successful
-            print("no error")
             return 0
     
-        print("it crashed :)")
         cls._successful_payload = payload
         return process.returncode
 
@@ -123,7 +105,6 @@ class Harness():
             process = subprocess.Popen([f'{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
             process = subprocess.Popen([f'./{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(payload_data)
         try:
             out, err = process.communicate(payload_data.encode()) 
         except subprocess.TimeoutExpired:

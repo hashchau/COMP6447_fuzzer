@@ -3,68 +3,87 @@ import itertools
 from io import StringIO
 from .FormatMutator import FormatMutator
 from .mutators.StringMutator import StringMutator
+import random
 class CSVMutator(FormatMutator):
 
     @staticmethod
     def mutate_once(payload):
-        pass
+        mutated_payloads = []
+        # Create a reader
+        csv_reader, csv_reader_spare = itertools.tee(csv.reader(payload.splitlines()))
+
+        # Create a list of lists 
+        csv_list = CSVMutator.convert_csv_to_list(csv_reader)
+
+        rand_num = random.randint(0,1)
+        if rand_num == 0:
+            mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_row(csv_list)))
+        elif rand_num == 1:
+            mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_column(csv_list)))
+
+        return mutated_payloads
         
     @staticmethod
     def mutate_all(payload):
         mutated_payloads = []
-        # print(f"split payload: {payload.splitlines()}")
+        # Create a reader
         csv_reader, csv_reader_spare = itertools.tee(csv.reader(payload.splitlines()))
 
-        # Count number of columns in the csv file
-        num_columns = len(next(csv_reader_spare))        
-        del csv_reader_spare
         # Create a list of lists 
-        csv_list = []
-        for row in csv_reader:
-            csv_list.append(row)
+        csv_list = CSVMutator.convert_csv_to_list(csv_reader)
 
+        # Add new row payload
+        mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_row(csv_list)))
 
-        new_list = CSVMutator.get_list_of_chars(num_columns, "A")
-        
-        csv_list.append(new_list)
-        # print(f"csv_list before == {csv_list}")
-        new_list = []
-        for row in csv_list:
-            new_row = ",".join(row)
-            # print(f"row == {row}")
-            new_list.append(new_row)
-        # print(f"new_list == {new_list}")
+        # Add new column payload
+        mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_column(csv_list)))
 
-        mutated_payload = "\n".join(new_list)
-        # print(f"mutated_payload == {mutated_payload}")
-
-        # file = StringIO()
-        # csv.writer(file).writerow(csv_list)
-
-        # print(payload)
-        
-        # print(file.getvalue())
-
-        mutated_payloads.append(mutated_payload)
         return mutated_payloads
     
     
     @staticmethod
-    def get_list_of_chars(num_columns, char):
-        new_string = char * num_columns
+    def generate_list(value, num_columns):
+        new_string = value * num_columns
         return list(new_string)
 
     @staticmethod
-    def add_row(payload, row):
-        list_of_char = get_list_of_chars(len(row), "A")
-        row.append(list_of_char)
-        return row
+    def add_row(csv_list, value = "A"):
+        list_of_char = CSVMutator.generate_list(value, len(csv_list[0]))
+        csv_list.append(list_of_char)
+        return csv_list
 
     @staticmethod
-    def add_columns():
-        pass
-    
+    def add_column(csv_list, value = "A"):
+        for row in csv_list:
+            row.append(value)
+        return csv_list    
+
     @staticmethod
     def convert_list_to_csv(list_of_lists):
+        new_list = []
+        for row in list_of_lists:
+            new_row = ",".join(row)
+            new_list.append(new_row)
+        mutated_payload = "\n".join(new_list)
+        return mutated_payload
 
+    @staticmethod
+    def convert_csv_to_list(csv_reader):
+        # Create a list of lists 
+        csv_list = []
+        for row in csv_reader:
+            csv_list.append(row)
+        
+        return csv_list
+
+    @staticmethod
+    def remove_row(csv_list, row_num):
+        pass
+
+    @staticmethod
+    def remove_column(csv_list, column_num):
+        pass
+
+    @staticmethod
+    def replace_str_with_format_str(csv_list):
         pass
