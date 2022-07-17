@@ -61,10 +61,8 @@ class Harness():
         cls._mutations.put((0,default_payload))
         
         while True:
-            # if round == 5:
-            #     break
                 
-            print(f"Fuzzing round {round}")                
+            print(f"Fuzzing mutation set {round}")                
             # Run the fuzzer on current mutations
             next_mutations = cls.execute_mutations()
             
@@ -80,13 +78,13 @@ class Harness():
                 for mutated_payload in mutated_payloads:
                     next_mutations.put((priority + 1, mutated_payload))
                 
-                
             # Replace queue with new mutations
             cls._mutations = next_mutations
             round += 1
 
         if cls._successful_payload != None:
             print("Finished fuzzing, writing payload to bad.txt")
+            print(f"The length of the payload is {len(cls._successful_payload)} bytes")
             with open("bad.txt", "w") as f:
                 f.write(cls._successful_payload)
         
@@ -105,10 +103,10 @@ class Harness():
             process = subprocess.Popen([f'{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
             process = subprocess.Popen([f'./{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
         try:
             out, err = process.communicate(payload_data.encode()) 
         except subprocess.TimeoutExpired:
-            print("Process exceeded given timeout value")
             process.terminate()
 
         return (process, out, err) 

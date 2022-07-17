@@ -29,7 +29,7 @@ class IntegerMutator(TypeMutator):
     
     @staticmethod
     def make_tiny(integer):
-        return sys.minsize
+        return -(sys.maxsize)
         # min_signed_32_bit_integer = -2147483648
         # return min_signed_32_bit_integer
     
