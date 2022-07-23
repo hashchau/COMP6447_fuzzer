@@ -2,3 +2,4 @@ venv/
 *.pyc
 test.out
 .vscode
+.DS_Store
