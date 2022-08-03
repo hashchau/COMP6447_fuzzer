@@ -1,14 +1,1 @@
-<html>
-	<head>
-		<link href="http://somewebsite.com"></link>
-	</head>
-	<body>
-		<h1>I%n'm %nnot a %%p%ns%%xpw%p%ne%xb%n de%sveloper.</h1>
-	</body>
-	<div id="%n#%nlol">
-		<a href="%phttp://g%p%soog%nl%se.com">%sHe%p%pre %s%n%xi%x%xs%%nx %ss%po%p%nme lin%n%nk...</a>
-	</div>
-	<tail>
-		<a href="ht%ptp://bin%pg.com">Foot%s%xer li%pnk</a>
-	</tail>
-</html>
+adaaaaaaaaaaaaaaaaaaaaaaa
