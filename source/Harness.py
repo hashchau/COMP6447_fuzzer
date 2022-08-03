@@ -4,6 +4,7 @@ from queue import PriorityQueue
 from QEMUHelper import QEMUHelper
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
+from strategies.XMLMutator import XMLMutator
 
 from magic import from_file
 
@@ -136,6 +137,10 @@ class Harness():
             print("Selecting plaintext Fuzzer")
         elif "HTML document, ASCII text" == file_type:
             print("Selecting XML Fuzzer")
+        elif "XML" in file_type:
+            print("Selecting XML Fuzzer")
+            cls._strategy = XMLMutator
+            return
         
         print("Unknown file type, using all fuzzers")
         cls._strategy = CSVMutator
