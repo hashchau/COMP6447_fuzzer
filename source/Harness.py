@@ -3,6 +3,7 @@ import subprocess
 from queue import PriorityQueue
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
+from strategies.PlaintextMutator import PlaintextMutator
 
 from magic import from_file
 
@@ -125,6 +126,8 @@ class Harness():
             return
         elif "ASCII text" == file_type:
             print("Selecting plaintext Fuzzer")
+            cls._strategy = PlaintextMutator
+            return
         elif "HTML document, ASCII text" == file_type:
             print("Selecting XML Fuzzer")
         
