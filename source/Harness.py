@@ -1,6 +1,8 @@
 import signal
 import subprocess
-from queue import PriorityQueue
+from queue import PriorityQueue, Queue
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
+
 from QEMUHelper import QEMUHelper
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
@@ -47,7 +49,10 @@ class Harness():
             priority, payload = queue_copy.get()
             # run the payload
 
+
+
             # Multithreading
+            
             unique_addresses = cls.try_payload_qemu(payload)
 
 
@@ -56,7 +61,37 @@ class Harness():
                 good_mutations.put((priority, payload))
 
         return good_mutations
-    
+
+    def execute_mutations_threaded(cls):
+        good_mutations = PriorityQueue()
+        
+        # Create a copy of the queue so we dont modify the original
+        queue_copy = PriorityQueue()
+        for i in cls._mutations.queue:
+            queue_copy.put(i)
+
+        # with ThreadPoolExecutor(max_workers=13) as executor:
+        #     for number, prime in zip(PRIMES, executor.map(is_prime, num_list)):
+        #         print(f"{number} is prime: {prime}") 
+
+        # run the queue
+        while not queue_copy.empty():
+            # get the highest priority payload
+            priority, payload = queue_copy.get()
+            # run the payload
+
+
+
+            # Multithreading
+            
+            unique_addresses = cls.try_payload_qemu(payload)
+
+
+            if not unique_addresses in cls._visited_addresses:
+                cls._visited_addresses.add(unique_addresses)
+                good_mutations.put((priority, payload))
+
+        return good_mutations
     # Entry point
     def fuzz(cls, default_payload):
         round = 1
@@ -108,19 +143,6 @@ class Harness():
 
         return unique_addresses
 
-    def send_data(cls, payload_data):
-        try:
-            process = subprocess.Popen([f'{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except:
-            process = subprocess.Popen([f'./{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        try:
-            out, err = process.communicate(payload_data.encode()) 
-        except subprocess.TimeoutExpired:
-            process.terminate()
-
-        return (process, out, err) 
-
     def set_fuzzer_strategy(cls, default_input):
         file_type = from_file(default_input)
         if "CSV" in file_type:
@@ -135,13 +157,14 @@ class Harness():
             return
         elif "ASCII text" == file_type:
             print("Selecting plaintext Fuzzer")
-        elif "HTML document, ASCII text" == file_type:
-            print("Selecting XML Fuzzer")
         elif "XML" in file_type:
+            print("Selecting XML Fuzzer")
+            cls._strategy = XMLMutator
+            return
+        elif "HTML document, ASCII text" == file_type:
             print("Selecting XML Fuzzer")
             cls._strategy = XMLMutator
             return
         
         print("Unknown file type, using all fuzzers")
         cls._strategy = CSVMutator
-        

@@ -11,7 +11,6 @@ class JSONMutator(FormatMutator):
         input_file_dict = json.loads(payload)
 
         rand_num = random.randint(0,2)
-        print(f"trying strategy {rand_num}")
         if rand_num == 0:
             mutated_payload = JSONMutator.insert_integer_overflow(input_file_dict)
         elif rand_num == 1:
@@ -19,12 +18,10 @@ class JSONMutator(FormatMutator):
         elif rand_num == 2:
             # duplicate the dictionary
             dup_file_dict = {} 
-            print(f"dup_file_dict: \n{dup_file_dict}")
             for key, value in input_file_dict.items():
                 new_key = key * 2
                 dup_file_dict[new_key] = input_file_dict[key]
             mutated_payload = input_file_dict | dup_file_dict
-        print(f"mutated payload: \n{mutated_payload}")
         return [json.dumps(mutated_payload)]
 
     @staticmethod
@@ -36,8 +33,6 @@ class JSONMutator(FormatMutator):
         mutated_payloads.append(JSONMutator.insert_integer_underflow(input_file_dict))
 
         return json.dumps(mutated_payloads)
-
-    
 
     @staticmethod
     def insert_integer_overflow(payload):
