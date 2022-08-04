@@ -1,5 +1,6 @@
 import signal
 import subprocess
+from pwn import ELF
 from queue import PriorityQueue, Queue
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 
@@ -29,6 +30,7 @@ class Harness():
             print('Creating new instance')
             cls._instance = cls.__new__(cls)
             cls._target = target
+            cls._arch = ELF(target).arch
             cls._mutations = PriorityQueue()
         
     @classmethod
@@ -129,7 +131,7 @@ class Harness():
                 f.write(cls._successful_payload)
         
     def try_payload_qemu(cls, payload):
-        unique_addresses = QEMUHelper.execute_payload(cls._target,payload)
+        unique_addresses = QEMUHelper.execute_payload(cls._target, cls._arch, payload)
 
         if cls._successful_payload:
             return
@@ -160,8 +162,6 @@ class Harness():
             print("Selecting plaintext Fuzzer")
             cls._strategy = PlaintextMutator
             return
-        elif "HTML document, ASCII text" == file_type:
-            print("Selecting XML Fuzzer")
         elif "XML" in file_type:
             print("Selecting XML Fuzzer")
             cls._strategy = XMLMutator
