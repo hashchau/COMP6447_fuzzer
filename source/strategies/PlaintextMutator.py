@@ -12,7 +12,7 @@ class PlaintextMutator(FormatMutator):
         inputs = payload.split('\n')[:-1]
 
         # Choose random line for fuzzing
-        fuzz_line = random.randint(0, len(inputs))
+        fuzz_line = random.randint(0, (len(inputs) - 1))
         
         if inputs[fuzz_line].isdigit():
             inputs[fuzz_line] = PlaintextMutator.mutate_integer(inputs[fuzz_line])
@@ -20,7 +20,7 @@ class PlaintextMutator(FormatMutator):
             inputs[fuzz_line] = PlaintextMutator.mutate_string(inputs[fuzz_line])
         
         mutated_payload = '\n'.join(inputs) + '\n'
-        
+        #print(mutated_payload) 
         return [mutated_payload]
 
     @staticmethod
@@ -48,7 +48,7 @@ class PlaintextMutator(FormatMutator):
 
     @staticmethod
     def mutate_integer(payload):
-        mutation = random.randint(0,8)
+        mutation = random.randint(0,3)
         mutated_integer = 0
 
         if mutation == 0:
@@ -59,15 +59,5 @@ class PlaintextMutator(FormatMutator):
             mutated_integer = IntegerMutator.sub_random(int(payload))
         elif mutation == 3:
             mutated_integer = IntegerMutator.make_negative(int(payload))
-        elif mutation == 4:
-            mutated_integer = IntegerMutator.make_huge(int(payload))
-        elif mutation == 5:
-            mutated_integer = IntegerMutator.make_tiny(int(payload))
-        elif mutation == 6:
-            mutated_integer = IntegerMutator.make_float(int(payload))
-        elif mutation == 7:
-            mutated_integer = IntegerMutator.make_bool(int(payload))
-        elif mutation == 8:
-            mutated_integer = IntegerMutator.make_null(int(payload))
 
         return str(mutated_integer)
