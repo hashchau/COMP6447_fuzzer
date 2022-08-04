@@ -5,14 +5,15 @@ from pprint import pprint
 from copy import deepcopy
 
 import random
-import xmltodict
 import xml.etree.ElementTree as ET
 
 class XMLMutator(FormatMutator):
+    @staticmethod
     def get_xml_tree_from_xml_str(xml_string):
         xml_tree = ET.ElementTree(ET.fromstring(xml_string))
         return xml_tree
 
+    @staticmethod
     def get_xml_str_from_xml_tree(xml_tree):
         xml_root = xml_tree.getroot()
         xml_string = ET.tostring(xml_root, method='xml')
@@ -22,9 +23,7 @@ class XMLMutator(FormatMutator):
     @staticmethod
     def mutate_once(payload):
         xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
-        print(f"xml_tree type: {type(xml_tree)}")
-        rand_num = random.randint(0,1)
-        rand_num = 2
+        rand_num = random.randint(0,2)
         print(f"Choosing strategy {rand_num}")
         if rand_num == 0:
             for child_ele in xml_tree.iter():
@@ -54,50 +53,3 @@ class XMLMutator(FormatMutator):
     @staticmethod
     def mutate_all(payload):
         pass 
-
-    @staticmethod
-    def insert_single_format_specifier(payload):
-        def format_string(value):
-            if isinstance(value, str):
-                return StringMutator.insert_single_format_specifier(value)
-
-        return XMLMutator.apply_function_recursively(payload, format_string)
-
-    def insert_format_string(payload):
-        def format_string(value):
-            if isinstance(value, str):
-                return StringMutator.insert_format_string(value)
-
-        return XMLMutator.apply_function_recursively(payload, format_string)
-        
-    @staticmethod
-    # <hr></hr>
-    def insert_xml_tag(payload):
-        def xml_tag(value):
-            mutated_value = value
-            mutated_value += "<field>"
-            for i in range(0, random.randint(1, 100)):
-                mutated_value += "<column />"
-            mutated_value += "</field>"
-            return mutated_value
-        return XMLMutator.apply_function_recursively(payload, xml_tag)
-
-    @staticmethod
-    def apply_function_recursively(obj, func):
-        if obj is None:
-            return None
-
-        if not isinstance(obj, list) and not isinstance(obj, dict):
-            return func(obj)
-        
-        if isinstance(obj, dict):
-            for key, value in obj.items():
-                obj[key] = XMLMutator.apply_function_recursively(value, func)
-            # for key, value in obj.items():
-            #     obj[XMLMutator.apply_function_recursively(key, func)] = value
-
-        if isinstance(obj, list):
-            for i, value in enumerate(obj):
-                obj[i] = XMLMutator.apply_function_recursively(value, func)
-
-        return obj
