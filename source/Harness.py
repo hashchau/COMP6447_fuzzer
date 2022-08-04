@@ -1,6 +1,9 @@
 import signal
 import subprocess
-from queue import PriorityQueue
+from pwn import ELF
+from queue import PriorityQueue, Queue
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 from QEMUHelper import QEMUHelper
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
@@ -17,7 +20,8 @@ class Harness():
     _strategy = None
     _successful_payload = None
     _visited_addresses = set()
-    
+    _THREAD_POOL_SIZE = 13
+
     def __init__(self):
         raise RuntimeError('Call get_instance() instead')
 
@@ -27,13 +31,13 @@ class Harness():
             print('Creating new instance')
             cls._instance = cls.__new__(cls)
             cls._target = target
+            cls._arch = ELF(target).arch
             cls._mutations = PriorityQueue()
         
     @classmethod
     def get_instance(cls):
         return cls._instance
-    
-    # Does not modify original queue
+
     def execute_mutations(cls):
         good_mutations = PriorityQueue()
         
@@ -42,26 +46,67 @@ class Harness():
         for i in cls._mutations.queue:
             queue_copy.put(i)
 
-        # run the queue
-        while not queue_copy.empty():
-            # get the highest priority payload
-            priority, payload = queue_copy.get()
-            # run the payload
+        with ThreadPoolExecutor(max_workers=cls._THREAD_POOL_SIZE) as executor:
+            futures = []
+            while not queue_copy.empty():
+                priority, payload = queue_copy.get()
+                futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, payload))
+            
+            for t_count, i in enumerate(as_completed(futures)):
+                
+                result = i.result()
+                if result is None:
+                    continue
+                
+                success, unique_addresses = result
 
-            # Multithreading
-            unique_addresses = cls.try_payload_qemu(payload)
+                if success:
+                    cls._successful_payload = payload
+                    return
 
+                if len(unique_addresses) > 0:
+                    for address in unique_addresses:
+                        cls._visited_addresses.add(address)
+                            
+                    good_mutations.put((priority+1, payload))
 
-            if not unique_addresses in cls._visited_addresses:
-                cls._visited_addresses.add(unique_addresses)
-                good_mutations.put((priority, payload))
+                    print(f"Found {len(unique_addresses)} unique addresses")
 
         return good_mutations
-    
+        
+        # # run the queue
+        # while not queue_copy.empty():
+        #     # get the highest priority payload
+        #     priority, payload = queue_copy.get()
+        #     # run the payload
+
+        #     # Multithreading
+
+        #     success, unique_addresses = QEMUHelper.execute_payload(cls._target, cls._arch, cls._visited_addresses, payload)
+        #     if success:
+        #         cls._successful_payload = payload
+        #         return
+
+        #     if len(unique_addresses) > 0:
+        #         for address in unique_addresses:
+        #             cls._visited_addresses.add(address)
+                        
+        #         good_mutations.put((priority, payload))
+
+        #         print(f"Found {len(unique_addresses)} unique addresses")
+
+        # return good_mutations
+
+    def mutate_vertically(cls, payload, num):
+        mutated_payloads = [payload]
+        for i in range(num):
+            mutated_payloads.append(cls._strategy.mutate_once(mutated_payloads[-1])[0])
+ 
+        return mutated_payloads
+
     # Entry point
     def fuzz(cls, default_payload):
         round = 1
-
         # Add the default payload to the mutation queue
         cls._mutations.put((0,default_payload))
                 
@@ -75,15 +120,16 @@ class Harness():
                 break
             
             # Generate new mutations
-            if next_mutations.empty():
-                while not cls._mutations.empty():
+            if next_mutations.qsize() < cls._THREAD_POOL_SIZE:
+                while not cls._mutations.empty() and next_mutations.qsize() < cls._THREAD_POOL_SIZE:
                     priority, payload = cls._mutations.get()
                     mutated_payloads = cls._strategy.mutate_once(payload)
 
                     for mutated_payload in mutated_payloads:
-                        next_mutations.put((priority + 1, mutated_payload))
+                        next_mutations.put((priority, mutated_payload))
                     
             # Replace queue with new mutations
+            print(f"Found {next_mutations.qsize()} new mutations, using them as the next mutation set")
             cls._mutations = next_mutations
             round += 1
 
@@ -92,35 +138,8 @@ class Harness():
             print(f"The length of the payload is {len(cls._successful_payload)} bytes")
             with open("bad.txt", "w") as f:
                 f.write(cls._successful_payload)
-        
-    def try_payload_qemu(cls, payload):
-        unique_addresses = QEMUHelper.execute_payload(cls._target,payload)
+    
 
-        if cls._successful_payload:
-            return
-
-        if not unique_addresses:
-            cls._successful_payload = payload
-            return
-
-        # Determine whether the payload created any code paths
-        if unique_addresses in cls._visited_addresses:
-            return
-
-        return unique_addresses
-
-    def send_data(cls, payload_data):
-        try:
-            process = subprocess.Popen([f'{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        except:
-            process = subprocess.Popen([f'./{cls._target}'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        try:
-            out, err = process.communicate(payload_data.encode()) 
-        except subprocess.TimeoutExpired:
-            process.terminate()
-
-        return (process, out, err) 
 
     def set_fuzzer_strategy(cls, default_input):
         file_type = from_file(default_input)
@@ -138,13 +157,14 @@ class Harness():
             print("Selecting plaintext Fuzzer")
             cls._strategy = PlaintextMutator
             return
-        elif "HTML document, ASCII text" == file_type:
-            print("Selecting XML Fuzzer")
         elif "XML" in file_type:
+            print("Selecting XML Fuzzer")
+            cls._strategy = XMLMutator
+            return
+        elif "HTML document, ASCII text" == file_type:
             print("Selecting XML Fuzzer")
             cls._strategy = XMLMutator
             return
         
         print("Unknown file type, using all fuzzers")
         cls._strategy = CSVMutator
-        

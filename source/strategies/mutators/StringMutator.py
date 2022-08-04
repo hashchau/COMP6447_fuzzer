@@ -43,9 +43,15 @@ class StringMutator(TypeMutator):
             replacement_location = random.randint(0, len(input_string) - 1)
             replacement_character = random.choice(format_chars)
             mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location:]
-        
+
         return mutated_string
 
+    def insert_single_format_specifier(input_string):
+        mutated_string = input_string
+        replacement_char = "%s"
+        mutated_string = mutated_string + replacement_char
+        return mutated_string
+    
     @staticmethod
     def extend_string(input_string):
         extend_size = random.randint(0, 100)
