@@ -16,7 +16,7 @@ class QEMUHelper:
         """
 
         random_str = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        trace_file_location = f"./trace-{random_str}"
+        trace_file_location = f"/tmp/trace-{random_str}"
         curr_arch = QEMUHelper.AMD64 if arch == "amd64" else QEMUHelper.I386
         try:
             # Do not create trace files if the binary's target architecture is amd64
@@ -24,7 +24,6 @@ class QEMUHelper:
                 process = subprocess.Popen([curr_arch, f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
         except:
             process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
