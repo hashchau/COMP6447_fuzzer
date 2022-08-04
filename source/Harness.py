@@ -3,6 +3,7 @@ import subprocess
 from pwn import ELF
 from queue import PriorityQueue, Queue
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from multiprocessing import cpu_count
 
 from QEMUHelper import QEMUHelper
 from strategies.JSONMutator import JSONMutator
@@ -20,7 +21,7 @@ class Harness():
     _strategy = None
     _successful_payload = None
     _visited_addresses = set()
-    _THREAD_POOL_SIZE = 13
+    _THREAD_POOL_SIZE = 5 #cpu_count()
 
     def __init__(self):
         raise RuntimeError('Call get_instance() instead')
