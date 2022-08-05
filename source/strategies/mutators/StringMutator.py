@@ -17,11 +17,11 @@ class StringMutator(TypeMutator):
         return input_string
     
     @staticmethod
-    def flip_bit(input_string):
-        chars = bytearray(str(input_string), 'utf-8')
-        flip_location = random.randint(0, len(chars) - 1)
-        chars[flip_location] ^= 0xFF
-        return str(chars)
+    def flip_bits(input_string):
+        byte_array_of_chars = bytearray(input_string, 'utf-8')
+        flip_location = random.randint(0, len(byte_array_of_chars) - 1)
+        byte_array_of_chars[flip_location] ^= 0xF
+        return byte_array_of_chars.decode() 
 
     @staticmethod
     def insert_new_line(input_string):

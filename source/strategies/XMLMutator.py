@@ -1,11 +1,8 @@
-from .FormatMutator import FormatMutator                                                                                         
-from .mutators.StringMutator import StringMutator                                                                                       
-from .mutators.IntegerMutator import IntegerMutator 
-from pprint import pprint
-from copy import deepcopy
-
 import random
 import xml.etree.ElementTree as ET
+
+from .FormatMutator import FormatMutator                                                                                         
+from .mutators.StringMutator import StringMutator
 
 class XMLMutator(FormatMutator):
     @staticmethod
@@ -24,6 +21,7 @@ class XMLMutator(FormatMutator):
     def mutate_once(payload):
         xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
         rand_num = random.randint(0,2)
+        rand_num = 2
         print(f"Choosing strategy {rand_num}")
         if rand_num == 0:
             for child_ele in xml_tree.iter():
@@ -41,12 +39,9 @@ class XMLMutator(FormatMutator):
             xml_root.insert(1, new_field_ele)
             mutated_xml = XMLMutator.get_xml_str_from_xml_tree(xml_tree)
         if rand_num == 2:
-            # new_tag_ele = ET.Element("tag")
-            # xml_root = xml_tree.getroot()
-            # for i in range (1000):
-            #     ET.SubElement(new_tag_ele, "tag")
-            # xml_root.insert(0, new_tag_ele)
-            mutated_xml = "<tag>" * 1000000 + "BREAD!" + "</tag>" * 1000000
+            # mutated_xml = "<tag>" * 35000 + "BREAD!" + "</tag>" * 35000
+            mutated_xml = StringMutator.flip_bits(payload)
+            print(f"mutated_xml: \n{mutated_xml}")
         
         return [mutated_xml]
 

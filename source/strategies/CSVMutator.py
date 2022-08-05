@@ -18,7 +18,7 @@ class CSVMutator(FormatMutator):
         if rand_num == 0:
             # Add multiple rows to the payload
             mutated_payload = CSVMutator.add_row(csv_list)
-            for i in range(4):
+            for i in range(10):
                 mutated_payload = CSVMutator.add_row(mutated_payload)
         elif rand_num == 1:
             mutated_payload = copy.deepcopy(csv_list)

@@ -2,7 +2,6 @@
 from sys import argv
 from Harness import Harness
 
-
 def main():
 
     if len(argv) != 3:
