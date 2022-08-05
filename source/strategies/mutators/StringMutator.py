@@ -40,13 +40,11 @@ class StringMutator(TypeMutator):
         if (len(input_string) - 1) > 0:
             format_chars = ['%s', '%n', '%x', '%p']
         
-            num_replacements = random.randint(0, len(input_string) - 1)
             mutated_string = input_string
         
-            for i in range(0, num_replacements):
-                replacement_location = random.randint(0, len(input_string) - 1)
-                replacement_character = random.choice(format_chars)
-                mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location:]
+            replacement_location = random.randint(0, len(input_string) - 1)
+            replacement_character = random.choice(format_chars)
+            mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location:]
         
             return mutated_string
 
@@ -68,14 +66,13 @@ class StringMutator(TypeMutator):
     @staticmethod
     def random_chars(input_string):
         if (len(input_string) - 1) > 0:
-            num_replacements = random.randint(0, len(input_string) - 1)
             mutated_string = input_string
-            for i in range(0, num_replacements):
-                replacement_location = random.randint(0, len(input_string) - 1)
-                replacement_character = chr(random.randint(0, 255))
+    
+            replacement_location = random.randint(0, len(input_string) - 1)
+            replacement_character = chr(random.randint(0, 255))
             
-                if replacement_character != '\n':
-                    mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location + 1:]
+            if replacement_character != '\n':
+                mutated_string = mutated_string[:replacement_location] + replacement_character + mutated_string[replacement_location + 1:]
         
             return mutated_string
 

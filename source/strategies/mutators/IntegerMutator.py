@@ -9,12 +9,12 @@ class IntegerMutator(TypeMutator):
     
     @staticmethod
     def add_random(integer):
-        integer += random.randint(sys.minsize, sys.maxsize)
+        integer += random.randint(0, 65535)
         return integer
     
     @staticmethod
     def sub_random(integer):
-        integer -= random.randint(sys.minsize, sys.maxsize)
+        integer -= random.randint(0, 65535)
         return integer
     
     @staticmethod

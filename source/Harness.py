@@ -168,4 +168,4 @@ class Harness():
             return
         
         print("Unknown file type, using all fuzzers")
-        cls._strategy = CSVMutator
+        cls._strategy = PlaintextMutator
