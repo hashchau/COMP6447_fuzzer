@@ -24,7 +24,6 @@ class QEMUHelper:
             process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         try:
-            print(node.payload)
             out, err = process.communicate(node.payload.encode()) 
         except subprocess.TimeoutExpired:
             process.terminate()

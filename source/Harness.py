@@ -184,14 +184,12 @@ class Harness():
             print("The program aborted")
         else:
             print("Other error")
-        output = "\n" + "-" * 100 + "\n"
+        output = "=" * 80 + "\n"
         output += "Fully Sick Fuzzer - by the boyz \n" 
-        output += "-" * 100 + "\n"
-        output += f"Run time: {round(runtime, 3)}\n"
+        output += "=" * 80 + "\n"
+        output += f"Run time: {round(runtime, 3)}s\n"
         # output += "Strategy: \n"
-        # output += "Distance from original input: \n"
-
-        output += f"The length of the payload is {len(successful_payload)} bytes\n"
+        output += f"Payload length: {len(successful_payload)} bytes\n"
         output += "Finished fuzzing, writing payload to bad.txt"
         print(output)
 
