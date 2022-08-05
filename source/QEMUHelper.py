@@ -10,11 +10,7 @@ class QEMUHelper:
     AMD64 = "qemu-x86_64"
     
     @staticmethod
-    def execute_payload(target, arch, visited_addresses, payload_data):
-        """
-            Returns (if it caused segfault, hash of the trace file)
-        """
-
+    def execute_payload(target, arch, visited_addresses, node):
         random_str = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
         trace_file_location = f"/tmp/trace-{random_str}"
         curr_arch = QEMUHelper.AMD64 if arch == "amd64" else QEMUHelper.I386
@@ -28,16 +24,17 @@ class QEMUHelper:
             process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         try:
-            out, err = process.communicate(payload_data.encode()) 
+            print(node.payload)
+            out, err = process.communicate(node.payload.encode()) 
         except subprocess.TimeoutExpired:
             process.terminate()
 
-        # Crashed
+        # Crashed    
         if process.returncode < 0:
             if os.path.isfile(trace_file_location):
                 os.remove(trace_file_location)
 
-            return (True, set(), payload_data, process)
+            return (True, set(), node, process)
 
         unique_addresses = set()
         base_address = None
@@ -60,7 +57,7 @@ class QEMUHelper:
         if os.path.isfile(trace_file_location):
             os.remove(trace_file_location)
         
-        return (False, unique_addresses, payload_data, process)
+        return (False, unique_addresses, node, process)
 
 
 # echo "a" | qemu-i386 -d exec -D trace2 ./binaries/plaintext1 

@@ -4,7 +4,7 @@ class PDFMutator(Fuzzer):
 
 
     @staticmethod
-    def mutate_once(payload):
+    def mutate_once(default_payload, payload):
         pass
     
     @staticmethod

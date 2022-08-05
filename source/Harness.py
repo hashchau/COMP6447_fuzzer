@@ -1,8 +1,9 @@
 from asyncio import ALL_COMPLETED
 import signal
 import subprocess
+import time
 from pwn import ELF
-from queue import PriorityQueue, Queue
+from queue import PriorityQueue
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from multiprocessing import cpu_count
 
@@ -41,6 +42,7 @@ class Harness():
         return cls._instance
 
     def execute_mutations(cls):
+        start = time.time()
         good_mutations = PriorityQueue()
         
         # Create a copy of the queue so we dont modify the original
@@ -51,8 +53,8 @@ class Harness():
         with ThreadPoolExecutor(max_workers=cls._THREAD_POOL_SIZE) as executor:
             futures = []
             while not queue_copy.empty():
-                priority, payload = queue_copy.get()
-                futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, payload))
+                node = queue_copy.get()
+                futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, node))
 
             # futures_tuple_of_sets = wait(futures, return_when=ALL_COMPLETED)
             # done_futures_set = futures_tuple_of_sets.done
@@ -63,18 +65,21 @@ class Harness():
                 result = i.result()
                 if result is None:
                     continue
-                success, unique_addresses, successful_payload, process = result
+                success, unique_addresses, node, process = result
+
                 # Crashed
                 if success:
-                    cls._successful_payload = successful_payload
-                    Harness.log_crash(process)
+                    end = time.time()
+                    runtime = end - start
+                    cls._successful_payload = node.payload
+                    Harness.log_crash(node.payload, process, runtime)
                     return
 
                 if len(unique_addresses) > 0:
                     for address in unique_addresses:
                         cls._visited_addresses.add(address)
                             
-                    good_mutations.put((priority+1, payload))
+                    good_mutations.put(Node(node.payload, node.distance + 1, True))
 
                     print(f"Found {len(unique_addresses)} unique addresses")
 
@@ -114,7 +119,7 @@ class Harness():
     def fuzz(cls, default_payload):
         round = 1
         # Add the default payload to the mutation queue
-        cls._mutations.put((0,default_payload))
+        cls._mutations.put(Node(default_payload, 0, False))
                 
         while True:
             print(f"Fuzzing mutation set {round}")                
@@ -126,24 +131,20 @@ class Harness():
                 break
             
             # Generate new mutations
-            if next_mutations.qsize() < cls._THREAD_POOL_SIZE:
-                while not cls._mutations.empty() and next_mutations.qsize() < cls._THREAD_POOL_SIZE:
-                    priority, payload = cls._mutations.get()
-                    mutated_payloads = cls._strategy.mutate_once(payload)
-
-                    for mutated_payload in mutated_payloads:
-                        next_mutations.put((priority, mutated_payload))
+            if next_mutations.qsize() == 0:
+                node = cls._mutations.get()
+                mutated_payloads = cls._strategy.mutate_once(default_payload, node.payload)
                     
+                for mutated_payload in mutated_payloads:
+                    next_mutations.put(Node(mutated_payload, node.distance, False))
+
+
+
             # Replace queue with new mutations
             print(f"Found {next_mutations.qsize()} new mutations, using them as the next mutation set")
             cls._mutations = next_mutations
             round += 1
 
-        # if cls._successful_payload != None:
-        print("Finished fuzzing, writing payload to bad.txt")
-        print(f"The length of the payload is {len(cls._successful_payload)} bytes")
-        with open("bad.txt", "w") as f:
-            f.write(cls._successful_payload)
     
 
 
@@ -176,13 +177,43 @@ class Harness():
         cls._strategy = PlaintextMutator
 
 
-    def log_crash(process):
+    def log_crash(successful_payload, process, runtime):
         if process.returncode == -(signal.SIGSEGV):
             print("The program exited with a segmentation fault")
         elif process.returncode == -(signal.SIGABRT):
-            print("Program aborted")
+            print("The program aborted")
         else:
-            print("No errors raised by program")
+            print("Other error")
+        output = "\n" + "-" * 100 + "\n"
+        output += "Fully Sick Fuzzer - by the boyz \n" 
+        output += "-" * 100 + "\n"
+        output += f"Run time: {round(runtime, 3)}\n"
+        # output += "Strategy: \n"
+        # output += "Distance from original input: \n"
 
-    def pretty_print_output():
-        pass
+        output += f"The length of the payload is {len(successful_payload)} bytes\n"
+        output += "Finished fuzzing, writing payload to bad.txt"
+        print(output)
+
+        with open("bad.txt", "w") as f:
+            f.write(successful_payload)
+
+class Node:
+    def __init__(self, payload, distance, new_coverge_branches):
+        self.payload = payload
+        self.distance = distance
+        self.new_coverge_branches = new_coverge_branches        
+
+    def __lt__(self, other):
+        if self.distance != other.distance:
+            return self.distance < other.distance
+        return self.new_coverge_branches < other.new_coverge_branches
+    
+    def __gt__(self, other):
+        if self.distance != other.distance:
+            return self.distance > other.distance
+        return self.new_coverge_branches > other.new_coverge_branches
+
+    def __eq__(self, other):
+        return (self.new_coverge_branches == other.new_coverge_branches) and (self.distance == other.distance)
+    

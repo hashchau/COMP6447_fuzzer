@@ -7,7 +7,7 @@ import random
 class JSONMutator(FormatMutator):
 
     @staticmethod
-    def mutate_once(payload):
+    def mutate_once(default_payload, payload):
         input_file_dict = json.loads(payload)
 
         rand_num = random.randint(0,2)

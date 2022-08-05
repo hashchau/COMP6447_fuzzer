@@ -7,7 +7,7 @@ import random
 class PlaintextMutator(FormatMutator):
 
     @staticmethod
-    def mutate_once(payload):
+    def mutate_once(default_payload, payload):
         inputs = payload.split('\n')[:-1]
 
         # Choose random line for fuzzing
@@ -19,7 +19,15 @@ class PlaintextMutator(FormatMutator):
             inputs[fuzz_line] = PlaintextMutator.mutate_string(inputs[fuzz_line])
         
         mutated_payload = '\n'.join(inputs) + '\n'
-        print(mutated_payload) 
+        
+        # for line in inputs:
+        #     if line.isdigit():
+        #         line = PlaintextMutator.mutate_integer(line)
+        #     else:
+        #         line = PlaintextMutator.mutate_string(line)
+        
+        # mutated_payload = '\n'.join(inputs) + '\n'
+
         return [mutated_payload]
 
     @staticmethod

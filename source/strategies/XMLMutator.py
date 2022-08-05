@@ -18,7 +18,7 @@ class XMLMutator(FormatMutator):
         return xml_string
 
     @staticmethod
-    def mutate_once(payload):
+    def mutate_once(default_payload, payload):
         try:
             xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
             rand_num = random.randint(0,2)
@@ -45,7 +45,7 @@ class XMLMutator(FormatMutator):
             
             return [mutated_xml]
         except:
-            return []
+            return [default_payload]
 
     @staticmethod
     def mutate_all(payload):
