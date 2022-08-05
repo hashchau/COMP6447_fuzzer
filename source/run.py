@@ -8,6 +8,7 @@ def main():
         print("Usage: %s <binary> <binaryinput.txt>" % argv[0])
         exit(1)
 
+
     target = argv[1]
     binary_input_path = argv[2]
 

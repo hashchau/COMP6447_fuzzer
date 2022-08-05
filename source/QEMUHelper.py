@@ -10,22 +10,25 @@ class QEMUHelper:
     AMD64 = "qemu-x86_64"
     
     @staticmethod
-    def execute_payload(target, arch, visited_addresses, node):
+    def execute_payload(target, arch, visited_addresses, payload_data):
         random_str = "".join(random.choices(string.ascii_uppercase + string.digits, k=10))
         trace_file_location = f"/tmp/trace-{random_str}"
         curr_arch = QEMUHelper.AMD64 if arch == "amd64" else QEMUHelper.I386
         try:
             # Do not create trace files if the binary's target architecture is amd64
             if (arch == "amd64"):
-                process = subprocess.Popen([curr_arch, f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen([f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
-            process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if (arch == "amd64"):
+                process = subprocess.Popen([f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         try:
-            print(node.payload)
-            out, err = process.communicate(node.payload.encode()) 
+            print(f"Executing payload: {payload_data.encode()}")
+            out, err = process.communicate(payload_data.encode()) 
         except subprocess.TimeoutExpired:
             process.terminate()
 
@@ -34,7 +37,7 @@ class QEMUHelper:
             if os.path.isfile(trace_file_location):
                 os.remove(trace_file_location)
 
-            return (True, set(), node, process)
+            return (True, set(), payload_data, process)
 
         unique_addresses = set()
         base_address = None
@@ -57,7 +60,7 @@ class QEMUHelper:
         if os.path.isfile(trace_file_location):
             os.remove(trace_file_location)
         
-        return (False, unique_addresses, node, process)
+        return (False, unique_addresses, payload_data, process)
 
 
 # echo "a" | qemu-i386 -d exec -D trace2 ./binaries/plaintext1 

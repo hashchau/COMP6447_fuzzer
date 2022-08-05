@@ -23,7 +23,7 @@ class Harness():
     _strategy = None
     _successful_payload = None
     _visited_addresses = set()
-    _THREAD_POOL_SIZE = 5 #cpu_count()
+    _THREAD_POOL_SIZE = 1 #cpu_count()
 
     def __init__(self):
         raise RuntimeError('Call get_instance() instead')
@@ -53,8 +53,8 @@ class Harness():
         with ThreadPoolExecutor(max_workers=cls._THREAD_POOL_SIZE) as executor:
             futures = []
             while not queue_copy.empty():
-                node = queue_copy.get()
-                futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, node))
+                priority, payload = queue_copy.get()
+                futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, payload))
 
             # futures_tuple_of_sets = wait(futures, return_when=ALL_COMPLETED)
             # done_futures_set = futures_tuple_of_sets.done
@@ -65,21 +65,21 @@ class Harness():
                 result = i.result()
                 if result is None:
                     continue
-                success, unique_addresses, node, process = result
+                success, unique_addresses, successful_payload, process = result
 
                 # Crashed
                 if success:
                     end = time.time()
                     runtime = end - start
-                    cls._successful_payload = node.payload
-                    Harness.log_crash(node.payload, process, runtime)
+                    cls._successful_payload = successful_payload
+                    Harness.log_crash(successful_payload, process, runtime)
                     return
 
                 if len(unique_addresses) > 0:
                     for address in unique_addresses:
                         cls._visited_addresses.add(address)
                             
-                    good_mutations.put(Node(node.payload, node.distance + 1, True))
+                    good_mutations.put((priority+1, successful_payload))
 
                     print(f"Found {len(unique_addresses)} unique addresses")
 
@@ -119,7 +119,7 @@ class Harness():
     def fuzz(cls, default_payload):
         round = 1
         # Add the default payload to the mutation queue
-        cls._mutations.put(Node(default_payload, 0, False))
+        cls._mutations.put((0,default_payload))
                 
         while True:
             print(f"Fuzzing mutation set {round}")                
@@ -131,13 +131,13 @@ class Harness():
                 break
             
             # Generate new mutations
-            if next_mutations.qsize() == 0:
-                node = cls._mutations.get()
-                mutated_payloads = cls._strategy.mutate_once(default_payload, node.payload)
-                    
-                for mutated_payload in mutated_payloads:
-                    next_mutations.put(Node(mutated_payload, node.distance, False))
+            if next_mutations.qsize() < cls._THREAD_POOL_SIZE:
+                while not cls._mutations.empty() and next_mutations.qsize() < cls._THREAD_POOL_SIZE:
+                    priority, payload = cls._mutations.get()
+                    mutated_payloads = cls._strategy.mutate_once(default_payload,payload)
 
+                    for mutated_payload in mutated_payloads:
+                        next_mutations.put((priority, mutated_payload))
 
 
             # Replace queue with new mutations
@@ -184,36 +184,35 @@ class Harness():
             print("The program aborted")
         else:
             print("Other error")
-        output = "\n" + "-" * 100 + "\n"
+        output = "=" * 80 + "\n"
         output += "Fully Sick Fuzzer - by the boyz \n" 
-        output += "-" * 100 + "\n"
-        output += f"Run time: {round(runtime, 3)}\n"
-        # output += "Strategy: \n"
-        # output += "Distance from original input: \n"
-
-        output += f"The length of the payload is {len(successful_payload)} bytes\n"
-        output += "Finished fuzzing, writing payload to bad.txt"
+        output += "=" * 80 + "\n"
+        output += f"Run time: {round(runtime, 3)} seconds \n"
+        output += f"Strategy: {Harness._strategy}\n"
+        output += f"Payload length: {len(successful_payload)} bytes\n"
+        output += "\nFinished fuzzing, writing payload to bad.txt\n"
+        # output += successful_payload
         print(output)
 
         with open("bad.txt", "w") as f:
             f.write(successful_payload)
 
-class Node:
-    def __init__(self, payload, distance, new_coverge_branches):
-        self.payload = payload
-        self.distance = distance
-        self.new_coverge_branches = new_coverge_branches        
+# class Node:
+#     def __init__(self, payload, distance, new_coverge_branches):
+#         self.payload = payload
+#         self.distance = distance
+#         self.new_coverge_branches = new_coverge_branches        
 
-    def __lt__(self, other):
-        if self.distance != other.distance:
-            return self.distance < other.distance
-        return self.new_coverge_branches < other.new_coverge_branches
+#     def __lt__(self, other):
+#         if self.distance != other.distance:
+#             return self.distance < other.distance
+#         return self.new_coverge_branches < other.new_coverge_branches
     
-    def __gt__(self, other):
-        if self.distance != other.distance:
-            return self.distance > other.distance
-        return self.new_coverge_branches > other.new_coverge_branches
+#     def __gt__(self, other):
+#         if self.distance != other.distance:
+#             return self.distance > other.distance
+#         return self.new_coverge_branches > other.new_coverge_branches
 
-    def __eq__(self, other):
-        return (self.new_coverge_branches == other.new_coverge_branches) and (self.distance == other.distance)
+#     def __eq__(self, other):
+#         return (self.new_coverge_branches == other.new_coverge_branches) and (self.distance == other.distance)
     
