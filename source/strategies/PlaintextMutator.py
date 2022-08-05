@@ -20,7 +20,7 @@ class PlaintextMutator(FormatMutator):
             inputs[fuzz_line] = PlaintextMutator.mutate_string(inputs[fuzz_line])
         
         mutated_payload = '\n'.join(inputs) + '\n'
-        #print(mutated_payload) 
+        print(mutated_payload) 
         return [mutated_payload]
 
     @staticmethod
@@ -31,7 +31,7 @@ class PlaintextMutator(FormatMutator):
     def mutate_string(payload):
         mutated_string = payload
         
-        mutation = random.randint(0,4)
+        mutation = random.randint(0,3)
 
         if mutation == 0:
             mutated_string = StringMutator.delete_char(mutated_string)
@@ -40,8 +40,6 @@ class PlaintextMutator(FormatMutator):
         elif mutation == 2:
             mutated_string = StringMutator.extend_string(mutated_string)
         elif mutation == 3:
-            mutated_string = StringMutator.repeat_string(mutated_string)
-        elif mutation == 4:
             mutated_string = StringMutator.random_chars(mutated_string)
             
         return mutated_string
