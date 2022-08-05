@@ -2,7 +2,6 @@ from .FormatMutator import FormatMutator
 from .mutators.StringMutator import StringMutator
 from .mutators.IntegerMutator import IntegerMutator
 
-import json
 import random
 
 class PlaintextMutator(FormatMutator):

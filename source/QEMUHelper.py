@@ -32,10 +32,12 @@ class QEMUHelper:
         except subprocess.TimeoutExpired:
             process.terminate()
 
+        # Crashed
         if process.returncode < 0:
             if os.path.isfile(trace_file_location):
                 os.remove(trace_file_location)
-            return (True, set())
+
+            return (True, set(), payload_data, process)
 
         unique_addresses = set()
         base_address = None
@@ -54,10 +56,11 @@ class QEMUHelper:
                         unique_addresses.add(relative_address)
                 f.close()
         
-        # Delete file
+        # Delete trace file
         if os.path.isfile(trace_file_location):
             os.remove(trace_file_location)
         
-        return (False, unique_addresses)
+        return (False, unique_addresses, payload_data, process)
+
 
 # echo "a" | qemu-i386 -d exec -D trace2 ./binaries/plaintext1 

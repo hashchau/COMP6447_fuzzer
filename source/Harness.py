@@ -1,8 +1,9 @@
+from asyncio import ALL_COMPLETED
 import signal
 import subprocess
 from pwn import ELF
 from queue import PriorityQueue, Queue
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait
 from multiprocessing import cpu_count
 
 from QEMUHelper import QEMUHelper
@@ -52,17 +53,21 @@ class Harness():
             while not queue_copy.empty():
                 priority, payload = queue_copy.get()
                 futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, payload))
-            
+
+            # futures_tuple_of_sets = wait(futures, return_when=ALL_COMPLETED)
+            # done_futures_set = futures_tuple_of_sets.done
+             
             for t_count, i in enumerate(as_completed(futures)):
+            # for t_count, i in enumerate(done_futures_set):
                 
                 result = i.result()
                 if result is None:
                     continue
-                
-                success, unique_addresses = result
-
+                success, unique_addresses, successful_payload, process = result
+                # Crashed
                 if success:
-                    cls._successful_payload = payload
+                    cls._successful_payload = successful_payload
+                    Harness.log_crash(process)
                     return
 
                 if len(unique_addresses) > 0:
@@ -117,7 +122,7 @@ class Harness():
             next_mutations = cls.execute_mutations()
             
             # Check if crash
-            if not cls._successful_payload is None:
+            if cls._successful_payload:
                 break
             
             # Generate new mutations
@@ -134,11 +139,11 @@ class Harness():
             cls._mutations = next_mutations
             round += 1
 
-        if cls._successful_payload != None:
-            print("Finished fuzzing, writing payload to bad.txt")
-            print(f"The length of the payload is {len(cls._successful_payload)} bytes")
-            with open("bad.txt", "w") as f:
-                f.write(cls._successful_payload)
+        # if cls._successful_payload != None:
+        print("Finished fuzzing, writing payload to bad.txt")
+        print(f"The length of the payload is {len(cls._successful_payload)} bytes")
+        with open("bad.txt", "w") as f:
+            f.write(cls._successful_payload)
     
 
 
@@ -169,3 +174,15 @@ class Harness():
         
         print("Unknown file type, using all fuzzers")
         cls._strategy = PlaintextMutator
+
+
+    def log_crash(process):
+        if process.returncode == -(signal.SIGSEGV):
+            print("The program exited with a segmentation fault")
+        elif process.returncode == -(signal.SIGABRT):
+            print("Program aborted")
+        else:
+            print("No errors raised by program")
+
+    def pretty_print_output():
+        pass
