@@ -4,7 +4,8 @@ import subprocess
 import time
 from pwn import ELF
 from queue import PriorityQueue
-from concurrent.futures import ThreadPoolExecutor, as_completed, wait
+from concurrent.futures import ThreadPoolExecutor, as_completed, wait, Future, Executor
+from threading import Lock
 from multiprocessing import cpu_count
 
 from QEMUHelper import QEMUHelper
@@ -14,6 +15,33 @@ from strategies.PlaintextMutator import PlaintextMutator
 from strategies.XMLMutator import XMLMutator
 
 from magic import from_file
+
+# Dummy Executor class for debugging purposes
+# This runs the program using a single thread instead of multiple threads, like ThreadPoolExecutor
+class DummyExecutor(Executor):
+
+    def __init__(self):
+        self._shutdown = False
+        self._shutdownLock = Lock()
+
+    def submit(self, fn, *args, **kwargs):
+        with self._shutdownLock:
+            if self._shutdown:
+                raise RuntimeError('cannot schedule new futures after shutdown')
+
+            f = Future()
+            try:
+                result = fn(*args, **kwargs)
+            except BaseException as e:
+                f.set_exception(e)
+            else:
+                f.set_result(result)
+
+            return f
+
+    def shutdown(self, wait=True):
+        with self._shutdownLock:
+            self._shutdown = True
 
 # Singleton class
 class Harness():
@@ -51,6 +79,7 @@ class Harness():
             queue_copy.put(i)
 
         with ThreadPoolExecutor(max_workers=cls._THREAD_POOL_SIZE) as executor:
+        # with DummyExecutor() as executor:
             futures = []
             while not queue_copy.empty():
                 node = queue_copy.get()

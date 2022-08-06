@@ -3,4 +3,6 @@
 import os
 import sys
 
-os.system(f"./run.py ../binaries/{sys.argv[1]} ../binaries/{sys.argv[1]}.txt")
+
+if __name__ == "__main__":
+    os.system(f"./run.py ../binaries/{sys.argv[1]} ../binaries/{sys.argv[1]}.txt")
