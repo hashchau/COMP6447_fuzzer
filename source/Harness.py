@@ -24,7 +24,7 @@ class Harness():
     _strategy = None
     _successful_payload = None
     _visited_addresses = set()
-    _THREAD_POOL_SIZE = cpu_count()
+    _THREAD_POOL_SIZE = 5 #cpu_count()
     _start = None
 
     def __init__(self):
@@ -61,11 +61,10 @@ class Harness():
 
             # futures_tuple_of_sets = wait(futures, return_when=ALL_COMPLETED)
             # done_futures_set = futures_tuple_of_sets.done
-             
             for t_count, i in enumerate(as_completed(futures)):
             # for t_count, i in enumerate(done_futures_set):
-                
-                result = i.result()
+
+                result = i.result(timeout=5)
                 if result is None:
                     continue
                 success, unique_addresses, node, process = result
@@ -80,7 +79,7 @@ class Harness():
                 if len(unique_addresses) > 0:
                     for address in unique_addresses:
                         cls._visited_addresses.add(address)
-                            
+
                     good_mutations.put(Node(node.payload, node.distance + 1, True))
 
                     print(f"Found {len(unique_addresses)} unique addresses")
@@ -94,7 +93,7 @@ class Harness():
         cls._mutations.put(Node(default_payload, 0, False))
                 
         while True:
-            print(f"Fuzzing mutation set {round}")                
+            print(f"Fuzzing mutation set {round}")
             # Run the fuzzer on current mutations
             next_mutations = cls.execute_mutations()
             
@@ -156,7 +155,7 @@ class Harness():
     def log_crash(successful_payload, process, runtime):
         output = "=" * 80 + "\n"
         output += "Fully Sick Fuzzer - by the boyz \n"
-
+        output = "=" * 80 + "\n"
         if process.returncode == -(signal.SIGSEGV):
             print("The program exited with a segmentation fault")
         elif process.returncode == -(signal.SIGABRT):

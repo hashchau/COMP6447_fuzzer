@@ -10,17 +10,17 @@ class JSONMutator(FormatMutator):
     def mutate_once(default_payload, payload):
         input_file_dict = json.loads(payload)
 
-        rand_num = random.randint(0,3)
+        rand_num = random.randint(0, 4)
         if rand_num == 0:
             mutated_payload = JSONMutator.insert_integer_overflow(input_file_dict)
         elif rand_num == 1:
             mutated_payload = JSONMutator.insert_integer_underflow(input_file_dict)
         elif rand_num == 2:
-            pass
-        elif rand_num == 3:
             mutated_payload = JSONMutator.insert_format_string(input_file_dict)
+        elif rand_num == 3:
+            mutated_payload = JSONMutator.insert_buffer_overflow(input_file_dict)
         elif rand_num == 4:
-            pass
+            mutated_payload = JSONMutator.duplicate_dictionary(input_file_dict)
         return [json.dumps(mutated_payload)]
 
     @staticmethod
@@ -56,6 +56,16 @@ class JSONMutator(FormatMutator):
         return JSONMutator.apply_function_recursively(payload, overflow_buffer)
 
     @staticmethod
+    def duplicate_dictionary(input_file_dict):
+        # duplicate the dictionary
+        dup_file_dict = {}
+        for key, value in input_file_dict.items():
+            new_key = key * 2
+            dup_file_dict[new_key] = input_file_dict[key]
+        mutated_payload = input_file_dict | dup_file_dict
+        return mutated_payload
+
+    @staticmethod
     def apply_function_recursively(obj, func):
         if obj is None:
             return None
@@ -72,12 +82,3 @@ class JSONMutator(FormatMutator):
                 obj[i] = JSONMutator.apply_function_recursively(value, func)
 
         return obj
-
-    @staticmethod
-    def duplicate_dictionary(input_file_dict):
-        # duplicate the dictionary
-        dup_file_dict = {}
-        for key, value in input_file_dict.items():
-            new_key = key * 2
-            dup_file_dict[new_key] = input_file_dict[key]
-        mutated_payload = input_file_dict | dup_file_dict

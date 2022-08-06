@@ -5,8 +5,8 @@
 #include <csv.h>
 
 void vuln() {
-    int result = 0;
-    struct csv_parser *p = NULL;
+//    int result = 0;
+//    struct csv_parser *p = NULL;
     char buffer[64];
     printf("Give me CSV input:\n");
     setbuf(stdout, NULL);

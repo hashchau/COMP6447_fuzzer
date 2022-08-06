@@ -1,17 +1,1 @@
-<html>
-    <head>
-        <link href="http://somexebsite.comhttp://somexebsi%pte.com" />
-    </head>
-    <body>
-        <h1>I'm not a web developer.</h1>
-    </body>
-
-    <div id="#lol%s#lol">
-        <a href="http://google.comhttp://google%p.com">Here is some link...</a>
-    </div>
-
-
-    <tail>
-        <a href="http://bing.comhttp:/%s/bing.com">Footer link</a>
-    </tail>
-</html>
+%padnm.AAA

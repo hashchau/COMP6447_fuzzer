@@ -19,9 +19,13 @@ class StringMutator(TypeMutator):
     @staticmethod
     def flip_bits(input_string):
         byte_array_of_chars = bytearray(input_string, 'utf-8')
-        flip_location = random.randint(0, len(byte_array_of_chars) - 1)
-        byte_array_of_chars[flip_location] ^= 0xF
-        return byte_array_of_chars.decode() 
+        try:
+            flip_location = random.randint(0, len(byte_array_of_chars) - 1)
+            byte_array_of_chars[flip_location] ^= 0xF
+            return byte_array_of_chars.decode()
+        except ValueError:
+            return input_string
+
 
     @staticmethod
     def insert_new_line(input_string):
