@@ -16,11 +16,11 @@ class CSVMutator(FormatMutator):
         csv_reader, spare_csv_reader = itertools.tee(csv.reader(payload.splitlines()))
         # Create a list of lists 
         csv_list = CSVMutator.convert_csv_to_list(csv_reader)
-        rand_num = random.randint(0,1)
+        rand_num = random.randint(0, 1)
         if rand_num == 0:
             # Add multiple rows to the payload
             mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_row(csv_list)))
-             
+
         elif rand_num == 1:
             # mutated_payload = copy.deepcopy(csv_list)
             mutated_payload = csv_list 

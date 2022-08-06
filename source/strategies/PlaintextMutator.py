@@ -35,7 +35,7 @@ class PlaintextMutator(FormatMutator):
     def mutate_string(payload):
         mutated_string = payload
         
-        mutation = random.randint(0,3)
+        mutation = random.randint(0,6)
 
         if mutation == 0:
             mutated_string = StringMutator.delete_char(mutated_string)
@@ -45,12 +45,20 @@ class PlaintextMutator(FormatMutator):
             mutated_string = StringMutator.extend_string(mutated_string)
         elif mutation == 3:
             mutated_string = StringMutator.random_chars(mutated_string)
+        elif mutation == 4:
+            mutated_string = StringMutator.repeat_string(mutated_string)
+        elif mutation == 5:
+            mutated_string = StringMutator.flip_bits(mutated_string)
+        elif mutation == 6:
+            mutated_string = StringMutator.insert_new_line(mutated_string)
+        elif mutation == 7:
+            mutated_string = StringMutator.insert_new_line_with_delimiter(mutated_string, random)
             
         return mutated_string
 
     @staticmethod
     def mutate_integer(payload):
-        mutation = random.randint(0,3)
+        mutation = random.randint(0,7)
         mutated_integer = 0
 
         if mutation == 0:
@@ -61,5 +69,13 @@ class PlaintextMutator(FormatMutator):
             mutated_integer = IntegerMutator.sub_random(int(payload))
         elif mutation == 3:
             mutated_integer = IntegerMutator.make_negative(int(payload))
+        elif mutation == 4:
+            mutated_integer = IntegerMutator.make_huge(int(payload))
+        elif mutation == 5:
+            mutated_integer = IntegerMutator.make_tiny(int(payload))
+        elif mutation == 6:
+            mutated_integer = IntegerMutator.make_float(int(payload))
+        elif mutation == 7:
+            mutated_integer = IntegerMutator.make_bool(int(payload))
 
         return str(mutated_integer)

@@ -24,7 +24,7 @@ class Harness():
     _strategy = None
     _successful_payload = None
     _visited_addresses = set()
-    _THREAD_POOL_SIZE = 5 #cpu_count()
+    _THREAD_POOL_SIZE = cpu_count()
     _start = None
 
     def __init__(self):

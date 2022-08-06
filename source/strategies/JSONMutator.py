@@ -10,18 +10,17 @@ class JSONMutator(FormatMutator):
     def mutate_once(default_payload, payload):
         input_file_dict = json.loads(payload)
 
-        rand_num = random.randint(0,2)
+        rand_num = random.randint(0,3)
         if rand_num == 0:
             mutated_payload = JSONMutator.insert_integer_overflow(input_file_dict)
         elif rand_num == 1:
             mutated_payload = JSONMutator.insert_integer_underflow(input_file_dict)
         elif rand_num == 2:
-            # duplicate the dictionary
-            dup_file_dict = {} 
-            for key, value in input_file_dict.items():
-                new_key = key * 2
-                dup_file_dict[new_key] = input_file_dict[key]
-            mutated_payload = input_file_dict | dup_file_dict
+            pass
+        elif rand_num == 3:
+            mutated_payload = JSONMutator.insert_format_string(input_file_dict)
+        elif rand_num == 4:
+            pass
         return [json.dumps(mutated_payload)]
 
     @staticmethod
@@ -73,3 +72,12 @@ class JSONMutator(FormatMutator):
                 obj[i] = JSONMutator.apply_function_recursively(value, func)
 
         return obj
+
+    @staticmethod
+    def duplicate_dictionary(input_file_dict):
+        # duplicate the dictionary
+        dup_file_dict = {}
+        for key, value in input_file_dict.items():
+            new_key = key * 2
+            dup_file_dict[new_key] = input_file_dict[key]
+        mutated_payload = input_file_dict | dup_file_dict

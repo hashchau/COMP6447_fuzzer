@@ -21,28 +21,44 @@ class XMLMutator(FormatMutator):
     def mutate_once(default_payload, payload):
         try:
             xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
-            rand_num = random.randint(0,2)
+            rand_num = random.randint(0,3)
             # rand_num = 2
             if rand_num == 0:
-                for child_ele in xml_tree.iter():
-                    if child_ele.attrib:
-                        key = list(child_ele.attrib.keys())[0]
-                        value = list(child_ele.attrib.values())[0]
-                        value += "%s"
-                        child_ele.set(key, value)
-                mutated_xml = XMLMutator.get_xml_str_from_xml_tree(xml_tree)
-            if rand_num == 1:
+                mutated_xml = XMLMutator.insert_format_str(payload)
+            elif rand_num == 1:
                 new_field_ele = ET.Element("field")
                 xml_root = xml_tree.getroot()
                 for i in range(50):
                     ET.SubElement(new_field_ele, "column")
                 xml_root.insert(1, new_field_ele)
                 mutated_xml = XMLMutator.get_xml_str_from_xml_tree(xml_tree)
-            if rand_num == 2:
-                mutated_xml = "<tag>" * 35000 + "BREAD!" + "</tag>" * 35000
-                # mutated_xml = StringMutator.flip_bits(payload)
-                # print(f"mutated_xml: \n{mutated_xml}")
-            
+            elif rand_num == 2:
+                mutated_xml = XMLMutator.recurse_big()
+            elif rand_num == 3:
+                mutated_xml = XMLMutator.insert_bit_flip(payload)
             return [mutated_xml]
         except:
             return [default_payload]
+
+    @staticmethod
+    def recurse_big():
+        return "<tag>" * 35000 + "BREAD!" + "</tag>" * 35000
+
+    def insert_format_str(payload):
+        xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
+        for child_ele in xml_tree.iter():
+            if child_ele.attrib:
+                key = list(child_ele.attrib.keys())[0]
+                value = list(child_ele.attrib.values())[0]
+                child_ele.set(key, value + StringMutator.insert_format_string(value))
+        return XMLMutator.get_xml_str_from_xml_tree(xml_tree)
+
+    def insert_bit_flip(payload):
+        xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
+        for child_ele in xml_tree.iter():
+            if child_ele.attrib:
+                key = list(child_ele.attrib.keys())[0]
+                value = list(child_ele.attrib.values())[0]
+                child_ele.set(key, StringMutator.flip_bits(value))
+                break
+        return XMLMutator.get_xml_str_from_xml_tree(xml_tree)
