@@ -2,6 +2,7 @@ from asyncio import ALL_COMPLETED
 import signal
 import subprocess
 import time
+import sys
 from pwn import ELF
 from queue import PriorityQueue
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait, Future, Executor
@@ -9,6 +10,8 @@ from threading import Lock
 from multiprocessing import cpu_count
 
 from QEMUHelper import QEMUHelper
+from strategies.mutators.FloatMutator import FloatMutator
+from strategies.mutators.IntegerMutator import IntegerMutator
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
 from strategies.PlaintextMutator import PlaintextMutator

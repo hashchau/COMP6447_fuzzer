@@ -1,23 +1,19 @@
-from TypeMutator import TypeMutator
+from hamcrest import none
+from .TypeMutator import TypeMutator
 import sys
 import random
 class FloatMutator(TypeMutator):
-    
     #Note: these functions may require the float be rounded to nearest whole number first
     
     @staticmethod
-    def bit_flip(flt):
-        return ~flt
+    def add_random(flt):
+        flt += random.uniform(-(sys.maxsize - 1), sys.maxsize)
+        return flt
     
     @staticmethod
-    def add_random(integer):
-        integer += random.uniform(sys.minsize, sys.maxsize)
-        return integer
-    
-    @staticmethod
-    def sub_random(integer):
-        integer -= random.uniform(sys.minsize, sys.maxsize)
-        return integer
+    def sub_random(flt):
+        flt -= random.uniform(-(sys.maxsize - 1), sys.maxsize)
+        return flt
     
     @staticmethod
     def make_negative(flt):
@@ -25,12 +21,12 @@ class FloatMutator(TypeMutator):
     
     @staticmethod
     def make_huge(flt):
-        return sys.float_info.max
+        return float('inf')
     
     @staticmethod
     def make_tiny(flt):
-        return sys.float_info.min
-    
+        return float('-inf')
+
     @staticmethod
     def make_int(flt):
         return int(flt)
@@ -41,4 +37,12 @@ class FloatMutator(TypeMutator):
     
     @staticmethod
     def make_null():
-        return None
+        return float("NaN")
+    
+    @staticmethod
+    def is_float(input_string):
+        if isinstance(input_string, str):
+            s = input_string.lstrip("-")
+            return ('.' in s) and (s.replace('.', '', 1).isdigit())
+        
+        return isinstance(input_string, float)

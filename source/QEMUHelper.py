@@ -19,12 +19,12 @@ class QEMUHelper:
         try:
             # Do not create trace files if the binary's target architecture is amd64
             if (arch == "amd64"):
-                process = subprocess.Popen([f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen([curr_arch, f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
             if (arch == "amd64"):
-                process = subprocess.Popen([f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen([curr_arch, f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

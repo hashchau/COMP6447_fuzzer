@@ -2,7 +2,6 @@ from .TypeMutator import TypeMutator
 import sys
 import random
 class IntegerMutator(TypeMutator):
-    
     @staticmethod
     def bit_flip(integer):
         return ~integer
@@ -24,15 +23,11 @@ class IntegerMutator(TypeMutator):
     @staticmethod
     def make_huge(integer):
         return sys.maxsize
-        # max_signed_32_bit_integer = 2147483647
-        # return max_signed_32_bit_integer
     
     @staticmethod
     def make_tiny(integer):
         return -(sys.maxsize)
-        # min_signed_32_bit_integer = -2147483648
-        # return min_signed_32_bit_integer
-    
+        
     @staticmethod
     def make_float(integer):
         return float(integer)
@@ -44,3 +39,10 @@ class IntegerMutator(TypeMutator):
     @staticmethod
     def make_null():
         return None
+
+    @staticmethod
+    def is_integer(input_string):
+        if isinstance(input_string, str):
+            return input_string.lstrip("-").isdigit()
+        
+        return isinstance(input_string, int)

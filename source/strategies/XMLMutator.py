@@ -20,7 +20,6 @@ class XMLMutator(FormatMutator):
     @staticmethod
     def mutate_once(default_payload, payload):
         try:
-            xml_tree = XMLMutator.get_xml_tree_from_xml_str(payload)
             rand_num = random.randint(0,3)
             # rand_num = 2
             if rand_num == 0:

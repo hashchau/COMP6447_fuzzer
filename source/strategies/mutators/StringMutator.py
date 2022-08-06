@@ -29,9 +29,12 @@ class StringMutator(TypeMutator):
 
     @staticmethod
     def insert_new_line(input_string):
-        replacement_location = random.randint(0, len(input_string) - 1)
-        mutated_string = input_string[:replacement_location] + '\n' + input_string[replacement_location:]
-        return mutated_string
+        try:
+            replacement_location = random.randint(0, len(input_string) - 1)
+            input_string = input_string[:replacement_location] + '\n' + input_string[replacement_location:]
+        except:
+            pass
+        return input_string
     
     @staticmethod
     def insert_new_line_with_delimiter(char, delimiter, num_columns):
@@ -82,3 +85,13 @@ class StringMutator(TypeMutator):
 
         return input_string
     
+    @staticmethod
+    def make_null():
+        return None
+    
+    @staticmethod
+    def is_string(input_string):
+        if not isinstance(input_string, str):
+            return False
+
+        return not input_string.lstrip("-").isdigit()
