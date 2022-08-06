@@ -16,33 +16,6 @@ from strategies.XMLMutator import XMLMutator
 
 from magic import from_file
 
-# Dummy Executor class for debugging purposes
-# This runs the program using a single thread instead of multiple threads, like ThreadPoolExecutor
-class DummyExecutor(Executor):
-
-    def __init__(self):
-        self._shutdown = False
-        self._shutdownLock = Lock()
-
-    def submit(self, fn, *args, **kwargs):
-        with self._shutdownLock:
-            if self._shutdown:
-                raise RuntimeError('cannot schedule new futures after shutdown')
-
-            f = Future()
-            try:
-                result = fn(*args, **kwargs)
-            except BaseException as e:
-                f.set_exception(e)
-            else:
-                f.set_result(result)
-
-            return f
-
-    def shutdown(self, wait=True):
-        with self._shutdownLock:
-            self._shutdown = True
-
 # Singleton class
 class Harness():
     _instance = None
@@ -174,9 +147,6 @@ class Harness():
             cls._mutations = next_mutations
             round += 1
 
-    
-
-
     def set_fuzzer_strategy(cls, default_input):
         file_type = from_file(default_input)
         if "CSV" in file_type:
@@ -207,21 +177,20 @@ class Harness():
 
 
     def log_crash(successful_payload, process, runtime):
+        output = "=" * 80 + "\n"
+        output += "Fully Sick Fuzzer - by the boyz \n"
+
         if process.returncode == -(signal.SIGSEGV):
             print("The program exited with a segmentation fault")
         elif process.returncode == -(signal.SIGABRT):
             print("The program aborted")
         else:
             print("Other error")
-        output = "=" * 80 + "\n"
-        output += "Fully Sick Fuzzer - by the boyz \n" 
-        output += "=" * 80 + "\n"
         output += f"Run time: {round(runtime, 3)}s\n"
         # output += "Strategy: \n"
         output += f"Payload length: {len(successful_payload)} bytes\n"
         output += "Finished fuzzing, writing payload to bad.txt"
         print(output)
-
         with open("bad.txt", "w") as f:
             f.write(successful_payload)
 
@@ -243,4 +212,30 @@ class Node:
 
     def __eq__(self, other):
         return (self.new_coverge_branches == other.new_coverge_branches) and (self.distance == other.distance)
-    
+
+# Dummy Executor class for debugging purposes
+# This runs the program using a single thread instead of multiple threads, like ThreadPoolExecutor
+class DummyExecutor(Executor):
+
+    def __init__(self):
+        self._shutdown = False
+        self._shutdownLock = Lock()
+
+    def submit(self, fn, *args, **kwargs):
+        with self._shutdownLock:
+            if self._shutdown:
+                raise RuntimeError('cannot schedule new futures after shutdown')
+
+            f = Future()
+            try:
+                result = fn(*args, **kwargs)
+            except BaseException as e:
+                f.set_exception(e)
+            else:
+                f.set_result(result)
+
+            return f
+
+    def shutdown(self, wait=True):
+        with self._shutdownLock:
+            self._shutdown = True

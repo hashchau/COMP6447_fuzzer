@@ -42,22 +42,6 @@ class CSVMutator(FormatMutator):
             mutated_payloads.append(CSVMutator.convert_list_to_csv(mutated_payload))
         return mutated_payloads
 
-    
-
-
-    @staticmethod
-    def mutate_all(payload):
-        mutated_payloads = []
-        # Create a reader
-        csv_reader, csv_reader_spare = itertools.tee(csv.reader(payload.splitlines()))
-        # Create a list of lists 
-        csv_list = CSVMutator.convert_csv_to_list(csv_reader)
-        # Add new row payload
-        mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_row(csv_list)))
-        # Add new column payload
-        mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_column(csv_list)))
-        return mutated_payloads
-    
     @staticmethod
     def generate_list(value, num_columns):
         new_string = value * num_columns

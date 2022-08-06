@@ -1,6 +1,6 @@
 # Fully Sick Fuzzer
 # COMP6447 Major Project
-# by Cameron Huang, Cyrus Wilkie, Hashimi Chau, Jayden Leung
+# by Cameron Huang, Cyrus Wilkie, Hashimi Chau, and Jayden Leung
 
 ## Design & Functionality - How the fuzzer works
 ### UML Diagram
@@ -14,9 +14,11 @@ The file type mutator engages in fuzzing strategies specific to the relevant fil
 
 The fuzzing strategies for the currently supported file types are:
 - JSON
-    - Through recursion, it detects the data type of the value located at each leaf node in the JSON dictionary and calls the corresponding type mutator to mutate that value
+  - Through recursion, it detects the data type of the value located at each leaf node in the JSON dictionary and calls the corresponding type mutator to mutate that value
 - CSV
-    - Adds rows and/or columns to the payload until the binary crashes
+  - Adds rows and/or columns to the payload until the binary crashes
+- XML
+  - 
 
 ### Type Mutations & Strategies
 Our program currently supports four different data type mutations:

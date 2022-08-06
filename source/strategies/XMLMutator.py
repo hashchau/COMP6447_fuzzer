@@ -34,7 +34,7 @@ class XMLMutator(FormatMutator):
             if rand_num == 1:
                 new_field_ele = ET.Element("field")
                 xml_root = xml_tree.getroot()
-                for i in range (50):
+                for i in range(50):
                     ET.SubElement(new_field_ele, "column")
                 xml_root.insert(1, new_field_ele)
                 mutated_xml = XMLMutator.get_xml_str_from_xml_tree(xml_tree)
@@ -46,7 +46,3 @@ class XMLMutator(FormatMutator):
             return [mutated_xml]
         except:
             return [default_payload]
-
-    @staticmethod
-    def mutate_all(payload):
-        pass 

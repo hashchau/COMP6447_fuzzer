@@ -10,13 +10,3 @@ class FormatMutator(ABC):
         Returns the mutated payload
         """
         pass
-
-    @abstractmethod
-    def mutate_all(payload):
-        """_summary_
-        Mutates the payload with all mutations strategies 
-
-        _returns_
-        Returns a list of the mutated payloads
-        """
-        pass

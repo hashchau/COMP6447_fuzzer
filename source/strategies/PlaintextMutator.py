@@ -33,10 +33,6 @@ class PlaintextMutator(FormatMutator):
         return [mutated_payload, mutated_default_payload]
 
     @staticmethod
-    def mutate_all(payload):
-        return PlaintextMutator.mutate_once(payload)
-
-    @staticmethod
     def mutate_string(payload):
         mutated_string = payload
         

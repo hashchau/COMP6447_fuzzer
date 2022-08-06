@@ -25,16 +25,6 @@ class JSONMutator(FormatMutator):
         return [json.dumps(mutated_payload)]
 
     @staticmethod
-    def mutate_all(payload):
-        input_file_dict = json.loads(payload)
-        mutated_payloads = []
-
-        mutated_payloads.append(JSONMutator.insert_integer_overflow(input_file_dict))
-        mutated_payloads.append(JSONMutator.insert_integer_underflow(input_file_dict))
-
-        return json.dumps(mutated_payloads)
-
-    @staticmethod
     def insert_integer_overflow(payload):
         def overflow_integer(value):
             if isinstance(value, int):
