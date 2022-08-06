@@ -17,17 +17,9 @@ class CSVMutator(FormatMutator):
         # Create a list of lists 
         csv_list = CSVMutator.convert_csv_to_list(csv_reader)
         rand_num = random.randint(0,1)
-        # rand_num = 0
         if rand_num == 0:
             # Add multiple rows to the payload
-            mutated_list = csv_list
-            mutated_lists = []
-            for i in range(1):
-                mutated_list = CSVMutator.add_row(mutated_list)
-                mutated_lists.append(mutated_list)
-            for mutated_list in mutated_lists:
-                mutated_payload = CSVMutator.convert_list_to_csv(mutated_list)
-                mutated_payloads.append(mutated_payload)
+            mutated_payloads.append(CSVMutator.convert_list_to_csv(CSVMutator.add_row(csv_list)))
              
         elif rand_num == 1:
             # mutated_payload = copy.deepcopy(csv_list)

@@ -9,8 +9,7 @@ class PlaintextMutator(FormatMutator):
     @staticmethod
     def mutate_once(default_payload, payload):
         inputs = payload.split('\n')[:-1]
-        print(payload)
-        #print(default_payload)
+
         # Choose random line of payload for fuzzing
         fuzz_line = random.randint(0, (len(inputs) - 1))
         

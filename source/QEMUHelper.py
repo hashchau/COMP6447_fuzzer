@@ -4,6 +4,7 @@ import subprocess
 import re
 import string
 import random
+import signal
 
 class QEMUHelper:
     I386 = "qemu-i386"
@@ -17,11 +18,14 @@ class QEMUHelper:
         try:
             # Do not create trace files if the binary's target architecture is amd64
             if (arch == "amd64"):
-                process = subprocess.Popen([curr_arch, f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                process = subprocess.Popen([f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
                 process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except:
-            process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            if (arch == "amd64"):
+                process = subprocess.Popen([f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            else:
+                process = subprocess.Popen([curr_arch, "-d", "exec", "-D", f"{trace_file_location}", f"./{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         try:
             out, err = process.communicate(node.payload.encode()) 
@@ -29,11 +33,20 @@ class QEMUHelper:
             process.terminate()
 
         # Crashed    
-        if process.returncode < 0:
+        if process.returncode == -(signal.SIGSEGV):
             if os.path.isfile(trace_file_location):
                 os.remove(trace_file_location)
-
             return (True, set(), node, process)
+
+        # Abort
+        if process.returncode == -(signal.SIGABRT):
+            if os.path.isfile(trace_file_location):
+                os.remove(trace_file_location)
+            # We skip this, don't mutate if not segfault
+            return (False, set(), node, process)
+
+
+
 
         unique_addresses = set()
         base_address = None
