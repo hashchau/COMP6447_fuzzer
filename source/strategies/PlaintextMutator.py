@@ -9,26 +9,28 @@ class PlaintextMutator(FormatMutator):
     @staticmethod
     def mutate_once(default_payload, payload):
         inputs = payload.split('\n')[:-1]
-
-        # Choose random line for fuzzing
+        print(payload)
+        #print(default_payload)
+        # Choose random line of payload for fuzzing
         fuzz_line = random.randint(0, (len(inputs) - 1))
         
-        if inputs[fuzz_line].isdigit():
+        if inputs[fuzz_line].lstrip("-").isdigit():
             inputs[fuzz_line] = PlaintextMutator.mutate_integer(inputs[fuzz_line])
         else:
             inputs[fuzz_line] = PlaintextMutator.mutate_string(inputs[fuzz_line])
         
         mutated_payload = '\n'.join(inputs) + '\n'
         
-        # for line in inputs:
-        #     if line.isdigit():
-        #         line = PlaintextMutator.mutate_integer(line)
-        #     else:
-        #         line = PlaintextMutator.mutate_string(line)
-        
-        # mutated_payload = '\n'.join(inputs) + '\n'
+        default_inputs = default_payload.split('\n')[:-1]
 
-        return [mutated_payload]
+        if default_inputs[fuzz_line].lstrip("-").isdigit():
+            default_inputs[fuzz_line] = PlaintextMutator.mutate_integer(default_inputs[fuzz_line])
+        else:
+            default_inputs[fuzz_line] = PlaintextMutator.mutate_string(default_inputs[fuzz_line])
+
+        mutated_default_payload = '\n'.join(default_inputs) + '\n'
+
+        return [mutated_payload, mutated_default_payload]
 
     @staticmethod
     def mutate_all(payload):

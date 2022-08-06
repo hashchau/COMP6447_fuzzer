@@ -52,7 +52,7 @@ class StringMutator(TypeMutator):
 
     @staticmethod
     def extend_string(input_string):
-        extend_size = random.randint(0, 100)
+        extend_size = random.randint(0, 5)
         mutated_string = input_string + ('A'*extend_size)
         return mutated_string
 
