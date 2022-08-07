@@ -3,13 +3,10 @@ This is a cool fuzzer that fuzzes stuff
 
 # Usage
 ```python
-python3 run.py binary binaryinput.txt
+cd source
+python3 ./fuzzer binary binaryinput.txt
 ```
 
-# Dependencies
-```
-
-```
 # Credits
 ```
 Jayden Leung (z5312070)
