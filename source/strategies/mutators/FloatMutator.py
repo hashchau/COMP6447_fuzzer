@@ -2,8 +2,7 @@ from .TypeMutator import TypeMutator
 import sys
 import random
 class FloatMutator(TypeMutator):
-    #Note: these functions may require the float be rounded to nearest whole number first
-    
+
     @staticmethod
     def add_random(flt):
         flt += random.uniform(-(sys.maxsize - 1), sys.maxsize)

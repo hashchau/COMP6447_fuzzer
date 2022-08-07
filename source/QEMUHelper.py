@@ -17,7 +17,6 @@ class QEMUHelper:
         curr_arch = QEMUHelper.AMD64 if arch == "amd64" else QEMUHelper.I386
 
         try:
-            # Do not create trace files if the binary's target architecture is amd64
             if (arch == "amd64"):
                 process = subprocess.Popen([curr_arch, f"{target}"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             else:
@@ -46,13 +45,9 @@ class QEMUHelper:
             # We skip this, don't mutate if not segfault
             return (False, set(), node, process)
 
-
-
-
         unique_addresses = set()
         base_address = None
 
-        # Do not read the non-existent trace file if the binary's target architecture is amd64
         if arch != "amd64":
             with open(trace_file_location, "r") as f:
                 for line in f:
@@ -72,5 +67,3 @@ class QEMUHelper:
         
         return (False, unique_addresses, node, process)
 
-
-# echo "a" | qemu-i386 -d exec -D trace2 ./binaries/plaintext1 

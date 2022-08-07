@@ -118,42 +118,6 @@ class JSONMutator(FormatMutator):
                     return StringMutator.make_null()
         return JSONMutator.apply_function_recursively(payload, mutate_str)
 
-    # @staticmethod
-    # def insert_bit_overflow(payload):
-    #     def overflow_integer(value):
-    #         if isinstance(value, int):
-    #             return IntegerMutator.make_huge(value)
-    #         elif isinstance(value, float):
-    #             return FloatMutator.make_huge(value)
-
-    #     return JSONMutator.apply_function_recursively(payload, overflow_integer)
-
-    # @staticmethod
-    # def insert_bit_underflow(payload):
-    #     def underflow_integer(value):
-    #         if isinstance(value, int):
-    #             return IntegerMutator.make_tiny(value)
-    #         elif isinstance(value, float):
-    #             return FloatMutator.make_tiny(value)
-
-    #     return JSONMutator.apply_function_recursively(payload, underflow_integer)
-    
-    # @staticmethod
-    # def insert_format_string(payload):
-    #     def format_string(value):
-    #         if isinstance(value, str):
-    #             return StringMutator.insert_format_string(value)
-
-    #     return JSONMutator.apply_function_recursively(payload, format_string)
-
-    # @staticmethod
-    # def insert_buffer_overflow(payload):
-    #     def overflow_buffer(value):
-    #         if isinstance(value, str):
-    #             return StringMutator.repeat_string(value)
-
-    #     return JSONMutator.apply_function_recursively(payload, overflow_buffer)
-
     @staticmethod
     def duplicate_dictionary(input_file_dict):
         # duplicate the dictionary

@@ -1,17 +1,10 @@
-from asyncio import ALL_COMPLETED
 import signal
-import subprocess
 import time
-import sys
 from pwn import ELF
 from queue import PriorityQueue
 from concurrent.futures import ThreadPoolExecutor, as_completed, wait, Future, Executor
-from threading import Lock
-from multiprocessing import cpu_count
 
 from QEMUHelper import QEMUHelper
-from strategies.mutators.FloatMutator import FloatMutator
-from strategies.mutators.IntegerMutator import IntegerMutator
 from strategies.JSONMutator import JSONMutator
 from strategies.CSVMutator import CSVMutator
 from strategies.PlaintextMutator import PlaintextMutator
@@ -50,22 +43,18 @@ class Harness():
     def execute_mutations(cls):
         good_mutations = PriorityQueue()
         
-        # Create a copy of the queue so we dont modify the original
+        # Create a copy of the queue so we don't modify the original
         queue_copy = PriorityQueue()
         for i in cls._mutations.queue:
             queue_copy.put(i)
 
         with ThreadPoolExecutor(max_workers=cls._THREAD_POOL_SIZE) as executor:
-        # with DummyExecutor() as executor:
             futures = []
             while not queue_copy.empty():
                 node = queue_copy.get()
                 futures.append(executor.submit(QEMUHelper.execute_payload, cls._target, cls._arch, cls._visited_addresses, node))
 
-            # futures_tuple_of_sets = wait(futures, return_when=ALL_COMPLETED)
-            # done_futures_set = futures_tuple_of_sets.done
             for t_count, i in enumerate(as_completed(futures)):
-            # for t_count, i in enumerate(done_futures_set):
 
                 result = i.result(timeout=5)
                 if result is None:
@@ -103,17 +92,7 @@ class Harness():
             # Check if crash
             if cls._successful_payload:
                 break
-            
-            # Generate new mutations (WORKING)
-            # if next_mutations.qsize() == 0:
-            #     node = cls._mutations.get()
-            #     mutated_payloads = cls._strategy.mutate_once(default_payload, node.payload)
-            #
-            #     for mutated_payload in mutated_payloads:
-            #         next_mutations.put(Node(mutated_payload, node.distance, False))
-            #
 
-            ##########
             while not cls._mutations.empty() and next_mutations.qsize() < cls._THREAD_POOL_SIZE:
                 node = cls._mutations.get()
                 mutated_payloads = cls._strategy.mutate_once(default_payload, node.payload)
@@ -191,30 +170,3 @@ class Node:
 
     def __eq__(self, other):
         return (self.new_coverge_branches == other.new_coverge_branches) and (self.distance == other.distance)
-
-# Dummy Executor class for debugging purposes
-# This runs the program using a single thread instead of multiple threads, like ThreadPoolExecutor
-class DummyExecutor(Executor):
-
-    def __init__(self):
-        self._shutdown = False
-        self._shutdownLock = Lock()
-
-    def submit(self, fn, *args, **kwargs):
-        with self._shutdownLock:
-            if self._shutdown:
-                raise RuntimeError('cannot schedule new futures after shutdown')
-
-            f = Future()
-            try:
-                result = fn(*args, **kwargs)
-            except BaseException as e:
-                f.set_exception(e)
-            else:
-                f.set_result(result)
-
-            return f
-
-    def shutdown(self, wait=True):
-        with self._shutdownLock:
-            self._shutdown = True
