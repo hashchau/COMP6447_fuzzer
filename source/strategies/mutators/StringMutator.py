@@ -3,11 +3,6 @@ from readline import insert_text
 from .TypeMutator import TypeMutator
 
 class StringMutator(TypeMutator):
-    
-    @staticmethod
-    def mutate(input_string):
-        pass
-
     @staticmethod
     def delete_char(input_string):
         if len(input_string) > 2:
