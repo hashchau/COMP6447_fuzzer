@@ -1,3 +1,1 @@
-0,0
-0,0
-0,0
+{"user": "johndoe", "admin": false, "uid": 1000, "groups": ["users", "wheel", "audio", "video"], "useruser": "johndoe", "adminadmin": false, "uiduid": 1000, "groupsgroups": ["users", "wheel", "audio", "video"], "useruseruseruser": "johndoe", "adminadminadminadmin": false, "uiduiduiduid": 1000, "groupsgroupsgroupsgroups": ["users", "wheel", "audio", "video"], "useruseruseruseruseruseruseruser": "johndoe", "adminadminadminadminadminadminadminadmin": false, "uiduiduiduiduiduiduiduid": 1000, "groupsgroupsgroupsgroupsgroupsgroupsgroupsgroups": ["users", "wheel", "audio", "video"]}

@@ -7,6 +7,6 @@ class FormatMutator(ABC):
         Mutates the payload once
 
         _returns_
-        Returns the mutated payload
+        Returns the mutated payloads
         """
         pass

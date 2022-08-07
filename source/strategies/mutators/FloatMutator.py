@@ -1,4 +1,3 @@
-from hamcrest import none
 from .TypeMutator import TypeMutator
 import sys
 import random
