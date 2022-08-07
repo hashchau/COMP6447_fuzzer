@@ -20,6 +20,8 @@ The fuzzing strategies for the currently supported file types are:
   - Adds rows and/or columns to the payload until the binary crashes
 - XML
   - 
+- Plaintext
+  - Tests
 
 ### Type Mutations & Strategies
 Our program currently supports four different data type mutations:

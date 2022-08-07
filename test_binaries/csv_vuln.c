@@ -19,11 +19,11 @@ const char* getfield(char* line, int num)
 int main()
 {
     char line[1024];
-    for(int i = 0; i < 2; i++){
+    fgets(line, 1024, stdin);
+    for(int i = 0; i < 3; i++) {
         fgets(line, 1024, stdin);
         char* tmp = strdup(line);
-        int num = atoi(getfield(tmp, 2));
-        printf("%d\n", atoi(getfield(tmp, num)));
+        printf("%d\n", atoi(getfield(tmp, atoi(getfield(tmp, 1)))));
         free(tmp);
     }
 }
