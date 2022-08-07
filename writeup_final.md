@@ -21,7 +21,7 @@ The fuzzing strategies for the currently supported file types are:
 - XML
   - 
 - Plaintext
-  - Tests
+  - 
 
 ### Type Mutations & Strategies
 Our program currently supports four different data type mutations:
