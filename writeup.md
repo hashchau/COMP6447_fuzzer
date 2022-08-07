@@ -3,30 +3,30 @@
 # by Cameron Huang, Cyrus Wilkie, Hashimi Chau, and Jayden Leung
 
 ## Project Specification Checklist
-[] 10 marks - General Fuzzer
-  [x] Finding all vulnerabilities in the 11 provided binaries. (10 - All except JPEG)
-  [x] Writing test vulnerable binaries to test your fuzzer
-[] 10 marks - Fuzzer Functionality
-  [x] Mutation Strategies
-    [x] Basic (bit flips, byte flips, known ints)
-    [x] Intermediate (repeated parts, keyword extraction, arithmetic)
-    [x] Advanced (coverage based mutations)
-  [] Understanding and manipulation of file formats (Manipulating file headers, field names, data structures, etc)
-    [x] Basic (JSON, CSV, XML)
-    [] Intermediate (JPEG, ELF)
-    [] Advanced (PDF)
-[] 10 marks - Harness Functionality
-  [x] Detecting the type of crash (2 marks)
-  [x] Detecting Code Coverage (2 marks)
-  [] Avoiding overheads (2 marks)
-    [] Not creating files
-    [] In memory resetting (Not calling execve)
-  [x] Useful logging / statistics collection and display (2 marks)
-  [x] Detecting Hangs / Infinite loops (2 marks)
-    [x] Detecting infinite loop (code coverage) vs slow running program (timeout approach)
-[] Bonus (6 marks) - Something awesome
-  [x] Something cool your fuzzer does (consult course staff to see if your thing is valid).
-  [] Finding novel / non-trivial bugs in Public Software / OSS Software with your fuzzer.
+- [] 10 marks - General Fuzzer
+  - [x] Finding all vulnerabilities in the 11 provided binaries. (10 - All except JPEG)
+  - [x] Writing test vulnerable binaries to test your fuzzer
+- [] 10 marks - Fuzzer Functionality
+  - [x] Mutation Strategies
+    - [x] Basic (bit flips, byte flips, known ints)
+    - [x] Intermediate (repeated parts, keyword extraction, arithmetic)
+    - [x] Advanced (coverage based mutations)
+  - [] Understanding and manipulation of file formats (Manipulating file headers, field names, data structures, etc)
+    - [x] Basic (JSON, CSV, XML)
+    - [] Intermediate (JPEG, ELF)
+    - [] Advanced (PDF)
+- [] 10 marks - Harness Functionality
+  - [x] Detecting the type of crash (2 marks)
+  - [x] Detecting Code Coverage (2 marks)
+  - [] Avoiding overheads (2 marks)
+    - [] Not creating files
+    - [] In memory resetting (Not calling execve)
+  - [x] Useful logging / statistics collection and display (2 marks)
+  - [x] Detecting Hangs / Infinite loops (2 marks)
+    - [x] Detecting infinite loop (code coverage) vs slow running program (timeout approach)
+- [] Bonus (6 marks) - Something awesome
+  - [x] Something cool your fuzzer does (consult course staff to see if your thing is valid).
+  - [] Finding novel / non-trivial bugs in Public Software / OSS Software with your fuzzer.
 
 ## Design & Functionality - How the fuzzer works
 ### UML Diagram
